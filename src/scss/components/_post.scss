@@ -1,0 +1,57 @@
+@mixin content-wrap {
+  position: relative;
+  width: 100%; 
+  max-width: 700px; 
+  margin-right: auto;
+  margin-left: auto;
+}
+.post-content {
+  width: 97%;
+  margin: 0 auto;
+  position: relative;
+  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span{
+    position: relative;
+    width: 100%; 
+    max-width: 700px; 
+    margin-right: auto;
+    margin-left: auto;
+  }
+  figure{
+    margin-right: 0;
+    margin-left: 0;
+  }
+  img{
+    width: 100%;
+  }
+  .post-header{
+    margin-bottom: 4rem;
+    @include content-wrap;
+  }
+  .post-meta{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    @include content-wrap;
+    time, span {
+      margin-right: 0.3rem;
+    }
+    span {
+      font-weight: 300;
+      font-family: $deco-text;
+    }
+  }
+  .post-title{
+    font-size: 5rem;
+    margin-bottom: 0.5rem;
+  }
+  .post-time {
+    font-family: $deco-text;
+    color: $grey;
+    font-size: 1.05rem;
+    margin-right: 0;
+  }
+  .post-tag-list a.tag-list-tag{
+    font-size: 1rem;
+  }
+}
+

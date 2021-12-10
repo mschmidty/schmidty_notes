@@ -1,0 +1,279 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorado: Hex Plots, API packages, and R</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">Colorado: Hex Plots, API packages, and R</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">November 30, 2019</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/gis/" class="tag-list-tag">GIS</a></li>
+      
+        
+        <li><a href="/tags/ggplot/" class="tag-list-tag">ggplot</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <figure><a href="/img/r/assets/hex_plots/precipitation2.jpg"><img src="/img/r/assets/hex_plots/precipitation2.jpg" alt="image"></a></figure>
+<p>I've been seeing a lot of hex plots made with r.  They are a way to semi-artistically visualize spatial data. Although I don't think this is completely appropriate for most visualizations, it looks amazing.  Here are a few examples of how I made hex plots in R.</p>
+<p>I used a lot of packages for this.  Most of them are used to get data.  Only <code>sf</code>, <code>raster</code>, <code>tidyverse</code> and <code>viridis</code> will be used to wrangle and plot the spatial data.</p>
+<pre><code class="language-r">library(prism)
+library(tidyverse)
+library(raster) ## Raster spatial data
+library(sf) ## Vector spatial data
+library(viridis) ## Color Scheme
+library(tidycensus) ## Getting Census Data
+library(tigris) ## Getting state and census boundary shapefiles
+library(extrafont) ## Better fonts for graphs
+library(elevatr) ## Getting elevation data
+library(osmdata) ## Open street map data
+
+##font_import()  ## Load all the fonts. You only need to do this once.
+
+fonttable()%&gt;%
+  View()  ## Allows you to view all of the available fonts.
+
+</code></pre>
+<p>First a little custom styling for the <code>theme_void</code> theme.</p>
+<pre><code class="language-r">
+t&lt;-theme_void()+
+  theme(
+    text=element_text(family = &quot;Playfair Display&quot;),
+    plot.margin = unit(c(1,1,1,1), &quot;cm&quot;),
+    plot.title = element_text(face = &quot;bold&quot;, size = 22, hjust = 0.5, color = &quot;#222222&quot;),
+    plot.subtitle = element_text(hjust = 0.5, color = &quot;#7A7A7A&quot;, size = 15),
+    plot.background = element_rect(fill = &quot;#f9f9f9&quot;, color = &quot;#f9f9f9&quot;),
+    panel.grid.major = element_line(color = &quot;#f9f9f9&quot;),
+    panel.grid.minor = element_blank(),
+    legend.title = element_text(face = &quot;bold&quot;),
+    legend.text = element_text(color = &quot;#7A7A7A&quot;),
+    legend.direction = &quot;horizontal&quot;,
+    legend.position=&quot;bottom&quot;,
+    legend.key.width = unit(5, &quot;cm&quot;),
+    legend.key.height = unit(0.3, &quot;cm&quot;),
+    legend.box = &quot;vertical&quot;
+  )  
+theme_set(t)
+</code></pre>
+<h2>Total precipitation</h2>
+<p>Download the data using <code>prism</code> package from the University of Oregon PRISM climate dataset.  YOU ONLY NEED TO DO THIS ONCE and the normals will be saved to a folder on your coputer in this case I saved them to &quot;data/prism&quot;!</p>
+<pre><code class="language-r">options(prism.path = &quot;data/prism&quot;) ## set the path to download the data
+get_prism_normals(&quot;ppt&quot;, &quot;800m&quot;, mon = c(1:12), keepZip = TRUE) ## download the data (downlaoding all months and keeping the zip files.)
+</code></pre>
+<p>Next wee need to read all of the each raster we just downloaded and then stack those into a <code>rasterBrick</code> object.</p>
+<pre><code class="language-r">file_paths&lt;-ls_prism_data(absPath = T)[1:12,2] ## List all file paths.  Make sure the run the option(prism.path = &quot;data/prism&quot;) before running this.
+list_rasters&lt;-lapply(file_paths, raster) ## use list of file paths to read each one with function raster.
+
+names&lt;-c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot; )
+names(list_rasters)&lt;-names ## rename each list item to it's corresponding month.
+
+(data&lt;-brick(list_rasters)) ## Combine into a brick. This takes some time.
+
+</code></pre>
+<h2>Subsetting the Raster and Readying the Hexagons</h2>
+<p>PRISM data covers the entire united states.  I only want to look at precipitation data for Colorado so we need to subset the data. To get the shapefile for the state of Colorado we can use an the amazing <code>tigris</code> package. We will then need to crop the raster to the state of Colorado.  The last step will be to extract the data to a hexagonal shapefile.</p>
+<pre><code class="language-r">state_shape&lt;-counties(&quot;Colorado&quot;) ## Get county shape
+
+data_cropped_state&lt;-data%&gt;%
+  crop(state_shape) ## Crop the raster data by the county shape
+
+
+</code></pre>
+<p>Now we make a hex grid that we are going to extract the raster data into.  To do this we use the <code>sf::st_make_grid</code> function.</p>
+<pre><code class="language-r">(state_grid&lt;-state_shape%&gt;%
+  st_as_sf()%&gt;%
+  st_make_grid(cellsize = .1,
+               square = FALSE))
+
+state_grid%&gt;%
+ggplot()+
+  geom_sf(fill = &quot;white&quot;)
+
+</code></pre>
+<p>I wanted to look at total annual precipitation throughout the year.  We downloaded 30 year normals for each month.  Now we just need to add those together and update the raster.</p>
+<pre><code class="language-r">total&lt;-data_cropped_state%&gt;%
+  as.data.frame()%&gt;%
+  rowSums()
+
+data_cropped_state$total&lt;-total
+</code></pre>
+<p>Now we just need to use the raster with the now calculated totals and extract that data to our <code>state_grid</code> hex grid.  We then need to bind the extracted data to the grid and we will be ready to plot.</p>
+<pre><code class="language-r">precip_extract&lt;-extract(x = data_cropped_state,
+                       y = as(state_grid, Class = &quot;Spatial&quot;),
+                       fun = mean )
+
+precip_hex&lt;-state_grid%&gt;%
+  cbind(as_tibble(precip_extract))
+</code></pre>
+<p>The only thing left to do is plot the resulting data using <code>geom_sf</code> with ggplot.</p>
+<pre><code class="language-r">
+legend_ticks&lt;-c(225, 325, 450, 700, 1050)
+precip_hex%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = total), color = &quot;#f9f9f9&quot;)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = -1, trans = &quot;log&quot;, breaks = legend_ticks, labels = legend_ticks)+
+  labs(title = &quot;Colorado Annual Precipitation&quot;,
+       subtitle = &quot;Source: PRISM 30 Year Normals&quot;,
+       fill = &quot;Total Precipitation log(mm)&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/precipitation.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+
+?ggsave
+</code></pre>
+<figure><a href="/img/r/assets/hex_plots/precipitation.jpg"><img src="/img/r/assets/hex_plots/precipitation.jpg" alt="Precipitation Hex Grid"></a></figure>
+<p>For the rest of these plots, I will just be exploring the data APIs and not go into the process of plotting a hex grid.</p>
+<h2>Elevation</h2>
+<p>Download the raster for the state of colorado using the <code>elevatr</code> package and crop it to colorado.</p>
+<pre><code class="language-r">state_dem&lt;-get_elev_raster(as(state_grid, &quot;Spatial&quot;), z = 7)%&gt;%
+  crop(state_shape)
+
+</code></pre>
+<p>Extract the elevation data to the grid we drew before and plot as hex.</p>
+<pre><code class="language-r">dem_extract&lt;-extract(x = state_dem,
+                    y = as(state_grid, Class = &quot;Spatial&quot;),
+                    fun = mean,
+                    na.rm = T)
+
+dem_hex&lt;-state_grid%&gt;%
+  cbind(as_tibble(dem_extract))
+
+names(dem_hex)&lt;-c(&quot;geometry&quot;,&quot;dem&quot;)
+
+dem_hex%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = dem), color = &quot;white&quot;)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = -1)+
+  labs(title = &quot;Colorado Elevation&quot;,
+       subtitle = &quot;Source: USGS&quot;,
+       fill = &quot;Elevation (m)&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/elevation.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+
+</code></pre>
+<h2>Population</h2>
+<p>Downlaod the data using the <code>tidycensus</code> package.  You can get your census api key <a href="https://api.census.gov/data/key_signup.html">here</a>.</p>
+<pre><code class="language-r">options(tigris_use_cache = TRUE) ## because we are going to use block level data a few times we want to cache this shapefile even though it is pretty small.
+census_api_key(Sys.getenv(&quot;CENSUS_API_KEY&quot;)) ## add your own API key here.
+
+v17 &lt;- load_variables(2017, &quot;acs5&quot;, cache = TRUE)
+View(v17%&gt;%
+       dplyr::select(concept, label, name)) ## Look at the avaiable data.
+
+population&lt;-get_acs(geography = &quot;block group&quot;,
+        variables = c(population =&quot;B01003_001&quot;),
+        state = &quot;CO&quot;,
+        geometry = TRUE) ## Adding geometry true binds the data to a sf object accessed using the tigris package.
+
+
+pop_final&lt;-population%&gt;%
+  mutate(area = as.numeric(st_area(.)), population_by_area = estimate/area)
+pop_final%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = population_by_area), lwd = 0)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = 1, trans = &quot;log&quot;)+
+  labs(title = &quot;Colorado Population&quot;,
+       subtitle = &quot;Source: US Census using the tidycensus package&quot;,
+       fill = &quot;Population log(m^2)&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/population_non_hex.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+
+pop_raster&lt;-rasterize(as(pop_final, &quot;Spatial&quot;), data, field = &quot;population_by_area&quot;, fun= mean, progress = &quot;text&quot;) ## to add the data to the shapefile we first need to rasterize it.
+
+
+pop_extract&lt;-extract(x = pop_raster,
+                    y = as(state_grid, Class = &quot;Spatial&quot;),
+                    fun = mean,
+                    na.rm = T)
+
+
+pop_hex&lt;-state_grid%&gt;%
+  cbind(as_tibble(pop_extract))%&gt;%
+  rename(pop_per_area = V1)
+
+pop_hex%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = pop_per_area), color = &quot;white&quot;)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = -1, trans = &quot;log&quot;)+
+  labs(title = &quot;Colorado Population&quot;,
+       subtitle = &quot;Source: US Census using the tidycensus package&quot;,
+       fill = &quot;Population log(m^2)&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/population.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+
+
+</code></pre>
+<h2>Income</h2>
+<p>Now we will look at income using the exact same process as above.</p>
+<pre><code class="language-r">
+income&lt;-get_acs(geography = &quot;block group&quot;,
+        variables = c(income =&quot;B19013_001&quot;),
+        state = &quot;CO&quot;,
+        geometry = TRUE)
+
+income_final&lt;-income%&gt;%
+  mutate(area = as.numeric(st_area(.)), income_by_area = estimate/area)
+
+income_final%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = estimate), lwd = 0)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = 1, trans = &quot;log&quot;)+
+  labs(title = &quot;Colorado Income&quot;,
+       subtitle = &quot;Source: US Census using the tidycensus package&quot;,
+       fill = &quot;Income log()&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/income_non_hex.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+
+income_raster&lt;-rasterize(as(income_final, &quot;Spatial&quot;), data, field = &quot;estimate&quot;, fun= mean, progress = &quot;text&quot;)
+
+
+income_extract&lt;-extract(x = income_raster,
+                    y = as(state_grid, Class = &quot;Spatial&quot;),
+                    fun = mean,
+                    na.rm = T)
+
+
+income_hex&lt;-state_grid%&gt;%
+  cbind(as_tibble(pop_extract))%&gt;%
+  rename(income = V1)
+
+income_hex%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = income), color = &quot;#FFFFFF&quot;)+
+  scale_fill_viridis(option = &quot;inferno&quot;, direction = -1, trans = &quot;log&quot;)+
+  labs(title = &quot;Colorado Income&quot;,
+       subtitle = &quot;Source: US Census using the tidycensus package&quot;,
+       fill = &quot;Income log()&quot;)+
+  guides(fill = guide_colourbar(title.position=&quot;top&quot;, title.hjust = 0.5))+
+  ggsave(&quot;output/income.jpg&quot;, height = 8, width = 11, dpi = 300, units = &quot;in&quot;)
+</code></pre>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2019-11-30-hex-plots-and-apis-in-r/ -->
+  </body>
+</html>

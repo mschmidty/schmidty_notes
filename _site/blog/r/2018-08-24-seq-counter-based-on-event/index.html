@@ -1,0 +1,64 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Method for counting in a sequence, reset by a binary event in R</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">A Method for counting in a sequence, reset by a binary event in R</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">August 24, 2018</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/dplyr/" class="tag-list-tag">dplyr</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>A method for creating a variable that sequential counts until an binary event occurs in another vairiable.</p>
+<h2>Load Libraries</h2>
+<pre><code class="language-{r}">library(dplyr)
+</code></pre>
+<h2>Create an data set</h2>
+<p>The dataset consists of and id, an event that is 0 or 1 %20 of the time, and a panel of &quot;a&quot;.  The panel was created because I could only find a solution that was grouped by a panel.</p>
+<pre><code class="language-{r}">id&lt;-1:30
+df&lt;-data.frame(id)
+df
+
+df1&lt;-df%&gt;%
+  mutate(event = sample(1:10, size=30, replace=T))%&gt;%
+  mutate(event=if_else(event&gt;8, 1, 0))%&gt;%
+  mutate(panel = &quot;a&quot;)
+df1
+</code></pre>
+<p>This code makes the counter which is reset everytime the event is 1.</p>
+<pre><code class="language-{r}">df1%&gt;%
+  group_by(panel, idx=cumsum(event==1L))%&gt;%
+  mutate(counter=row_number())%&gt;%
+  ungroup%&gt;%
+  select(-idx, -panel)
+</code></pre>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2018-08-24-seq-counter-based-on-event/ -->
+  </body>
+</html>

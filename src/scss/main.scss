@@ -1,0 +1,10 @@
+//Import base
+@import 'base/color', 'base/text';
+//Import components
+@import 'components/page', 'components/blog-index', 'components/post', 'components/tag-list';
+//Import template files
+@import 'templates/home';
+
+body {
+  background: $white;
+}

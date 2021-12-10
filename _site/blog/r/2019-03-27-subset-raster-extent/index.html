@@ -1,0 +1,86 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subset Raster Extent w/ R</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">Subset Raster Extent w/ R</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">March 27, 2019</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/raster/" class="tag-list-tag">raster</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>A little snippet that helps subset raster extents.</p>
+<pre><code class="language-r">
+r&lt;-raster(res=1)
+extent(r)&lt;-extent(1,20, 0,30)
+
+xmin&lt;-r@extent@xmin
+xmax&lt;-r@extent@xmax
+ymin&lt;-r@extent@ymin
+ymax&lt;-r@extent@ymax
+
+list_of_extents&lt;-list()
+n&lt;-4 ##or whatever
+for(i in 1:(n-1)){
+  list_of_extents[[i]]&lt;-extent(xmin, (xmax-xmin)/n*i+xmin, ymin, ymax)
+}
+
+
+list_of_extents
+
+.... returns ...
+[[1]]
+class       : Extent
+xmin        : 1
+xmax        : 5.75
+ymin        : 0
+ymax        : 30
+
+[[2]]
+class       : Extent
+xmin        : 1
+xmax        : 10.5
+ymin        : 0
+ymax        : 30
+
+[[3]]
+class       : Extent
+xmin        : 1
+xmax        : 15.25
+ymin        : 0
+ymax        : 30
+
+</code></pre>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2019-03-27-subset-raster-extent/ -->
+  </body>
+</html>

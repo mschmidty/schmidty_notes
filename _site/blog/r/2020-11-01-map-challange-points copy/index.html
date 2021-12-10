@@ -1,0 +1,94 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#30daymapchallange Day 1 Points</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">#30daymapchallange Day 1 Points</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">August 27, 2020</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/ggplot/" class="tag-list-tag">ggplot</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <figure><a href="/img/r/assets/maps/01-points-2020_wildfires_in_the_west2.png"><img src="/img/r/assets/maps/01-points-2020_wildfires_in_the_west2.png" alt="image"></a></figure>
+<p>I'm starting the <a href="https://twitter.com/search?q=%2330DayMapChallenge&amp;src=typed_query">#30daymapchallange</a> Points prompt by continuing my obsession with the current fire season.  Here are all the fires from 2020 mapped as points. What a year.</p>
+<p><a href="https://data-nifc.opendata.arcgis.com/datasets/wildfire-perimeters">Data Source</a></p>
+<pre><code class="language-r">library(sf)
+library(schmidtytheme)
+library(tidyverse)
+library(rnaturalearth)
+extrafont::loadfonts()
+
+theme_set(theme_schmidt()+
+            theme(
+              text=element_text(family=&quot;Public Sans Regular&quot;),
+              plot.title=element_text(family=&quot;Ultra&quot;,size=&quot;30&quot;)
+            ))
+
+perimeters&lt;-st_read(&quot;data/wildfire_perim/Public_NIFS_Perimeters.shp&quot;)%&gt;%
+  bind_cols(area_calc_msq=as.numeric(st_area(.)))
+
+library(scales)
+usa &lt;- ne_states(country=&quot;united states of america&quot;, returnclass=&quot;sf&quot;)
+the_west&lt;-usa%&gt;%
+  filter(name %in% c(&quot;California&quot;, &quot;Oregon&quot;, &quot;Washington&quot;, &quot;New Mexico&quot;, &quot;Arizona&quot;, &quot;Nevada&quot;, &quot;Idaho&quot;, &quot;Wyoming&quot;,&quot;Montana&quot;, &quot;Utah&quot;, &quot;Colorado&quot;))
+
+
+
+fire_data&lt;-perimeters%&gt;%
+  select(IncidentNa, area_calc_msq)%&gt;%
+  mutate(area_calc_hect=area_calc_msq*0.0001)%&gt;%
+  st_crop(the_west)%&gt;%
+  st_centroid()
+
+ggplot()+
+  geom_sf(data=the_west, fill=&quot;#333333&quot;, color=background_color)+
+  geom_sf(data=fire_data, aes(size=area_calc_hect), color=&quot;#FF6A5D&quot;, alpha=.5)+
+  scale_size_continuous(range = c(0.5, 13), label=comma)+
+  coord_sf()+
+  labs(title=&quot;2020 Wildfires Accross the Western US&quot;,
+       subtitle=&quot;&quot;,
+       size=&quot;Hectares&quot;)+
+  theme(
+    plot.background=element_rect(fill = background_color, colour = NA),
+    axis.text=element_blank(),
+    panel.border=element_blank(),
+    axis.line=element_blank(),
+    plot.title=element_text(size=20),
+    panel.grid.major = element_line(colour = &quot;transparent&quot;),
+    legend.title=element_text(family=&quot;Ultra&quot;),
+    legend.position=&quot;bottom&quot;
+  )+ggsave(&quot;output/01-points-2020_wildfires_in_the_west.png&quot;, h=11, w=11, type=&quot;cairo&quot;)
+</code></pre>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2020-11-01-map-challange-points copy/ -->
+  </body>
+</html>

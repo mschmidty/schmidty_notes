@@ -1,0 +1,22 @@
+{
+  "name": "schmidty_notes",
+  "version": "0.0.1",
+  "description": "A blog for Michael Schmidt",
+  "main": "index.js",
+  "scripts": {
+    "watch:eleventy": "npx @11ty/eleventy --serve",
+    "watch:sass": "npx sass src/scss:_site/css --watch",
+    "start": "npm run watch:eleventy & npm run watch:sass"
+  },
+  "author": "@mschmidty",
+  "license": "ISC",
+  "devDependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "markdown-it": "^12.2.0",
+    "markdown-it-implicit-figures": "^0.10.0"
+  },
+  "dependencies": {
+    "eleventy-plugin-excerpt": "^1.1.2",
+    "sass": "^1.43.2"
+  }
+}

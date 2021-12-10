@@ -1,0 +1,25 @@
+.tags-list {
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+  padding-left: 0;
+  li {
+    margin-right: 0.4rem;
+  }
+  a.tag-list-tag{
+    font-style: italic;
+    font-size: 0.8rem;
+    text-decoration: none;
+    margin-top: 0;
+    &::before {
+      content: "#";
+    }
+    &::after{
+      content: ",";
+    }
+  }
+  
+  li:last-of-type a::after{
+    content: "";
+  }
+}

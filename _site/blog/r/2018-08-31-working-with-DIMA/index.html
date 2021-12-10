@@ -1,0 +1,257 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working with DIMA Tools and Making a Plant List from Species Richness Table</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">Working with DIMA Tools and Making a Plant List from Species Richness Table</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">August 31, 2018</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/gis/" class="tag-list-tag">GIS</a></li>
+      
+        
+        <li><a href="/tags/aim/" class="tag-list-tag">AIM</a></li>
+      
+        
+        <li><a href="/tags/dima/" class="tag-list-tag">DIMA</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>This is a series of notes that works with the DIMA database. The DIMA was produced by the <a href="https://jornada.nmsu.edu/">Jornada Research Center</a> for the <a href="http://aim.landscapetoolbox.org/introduction-to-aim/">Assessment Inventory and Monitoring</a> framework.</p>
+<p>This R file determines species richness and parses all plants found to make a complete plant list with the number of times they have occurred.</p>
+<p>Some useful techniques that are used in it are:</p>
+<ul>
+<li>parsing strings in a column so that each parsed entity is a new entry in a column.</li>
+<li>counting the number of occurrences of a given value within a column.</li>
+</ul>
+<h2>Load libraries</h2>
+<p>you must have devtools installed to get dima.tools from <a href="https://github.com/nstauffer/dima.tools">here</a>.</p>
+<pre><code class="language-{r}">##Load Libraries - May need to intall these with install.packages() before loading.
+library(RODBC) ## - for reading Access Databases
+library(tidyverse)
+library(dima.tools)
+library(data.table)
+library(stringr)
+library(ggthemes)
+</code></pre>
+<h2>Load the DIMA database.</h2>
+<p>You can either use read.dima, as I do here. Or you can use the RODBC package like so <code>odbcDriverConnect(&quot;Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=database/8_30.mdb&quot;)</code>.  <strong>Note that you must be using 32 bit version of R to connect to an Access Database (either method).</strong> to change your r version, go to <code>Tools&gt;Global Options</code> and under the <code>General</code> tab, select <code>change</code> under the &quot;R version&quot; section.</p>
+<pre><code class="language-{r}">dima&lt;-read.dima(&quot;database&quot;, all.tables = T)
+</code></pre>
+<h2>find the species richness table.</h2>
+<pre><code class="language-{r}">species_rich_details&lt;-dima$tblSpecRichDetail
+species_rich_details
+</code></pre>
+<h2>Subset the species list</h2>
+<p>We have a lot of blank rows, to eliminate those I added the <code>filter()</code> function to eliminate all of the rows with no plants. Separate rows is used to parse through all of the plant codes.</p>
+<pre><code class="language-{r}">all_species&lt;-species_rich_details %&gt;%
+  filter(SpeciesCount&gt;0)%&gt;%
+  select(SpeciesList)%&gt;%
+  separate_rows(SpeciesList, convert=T)
+
+View(all_species)
+</code></pre>
+<p>The above code subsets that data and turns this:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Richness</th>
+<th>SpeciesList</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3</td>
+<td>ACHY; POFE; BOGR2;</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>PLJA; HECO26;</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+<td>PIED; ARTR2; DEPI; HECO26</td>
+</tr>
+</tbody>
+</table>
+<p>Into this:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>SpeciesList</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>ACHY</td>
+</tr>
+<tr>
+<td>2</td>
+<td>POFE</td>
+</tr>
+<tr>
+<td>3</td>
+<td>BOGR</td>
+</tr>
+<tr>
+<td>4</td>
+<td>PLJA</td>
+</tr>
+<tr>
+<td>5</td>
+<td>HECO26</td>
+</tr>
+<tr>
+<td>6</td>
+<td>PIED</td>
+</tr>
+<tr>
+<td>7</td>
+<td>ARTR2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DEPI</td>
+</tr>
+<tr>
+<td>9</td>
+<td>HECO26</td>
+</tr>
+</tbody>
+</table>
+<h2>Count each occurrent with <code>table()</code></h2>
+<p>This counts each occurrence of each plant and displays it in a table;</p>
+<pre><code class="language-{r}">count&lt;-as.data.frame(table(all_species$SpeciesList))
+final_list&lt;-count%&gt;%
+  rename(symbol=1, count=2)
+final_list&lt;-final_list[-1, ]
+final_list
+</code></pre>
+<h2>Load and Merge with the plant list for Colorado</h2>
+<h3>Read the Plant List.</h3>
+<p>I got this plant list at the <a href="https://plants.sc.egov.usda.gov/dl_state.html">USDA Plants Database</a>.</p>
+<pre><code class="language-{r}">plant_list&lt;-read_csv(&quot;COplants5312018.txt&quot;)
+plant_list
+</code></pre>
+<h3>Clean and Merge</h3>
+<p>The plant list sometimes has more than one entry for each plant.  For example ACHY has 3 entries.  When you merge it will match all three of those entries, but we only want one of the entries, so we select just the first of each plant instance with <code>match(unique())</code>.</p>
+<pre><code class="language-{r}">plant_list_cl&lt;- plant_list%&gt;%
+  rename(symbol=1, sci_name=3)
+plant_list_cl&lt;-plant_list_cl[match(unique(plant_list_cl$symbol), plant_list_cl$symbol),]
+plant_list_cl
+</code></pre>
+<h3>Join the tables</h3>
+<pre><code class="language-{r}">final_merged_list&lt;-final_list %&gt;%
+  left_join(plant_list_cl)%&gt;%
+  rename(num_occur=count, common_name=5)%&gt;%
+  select(-3)
+final_merged_list
+</code></pre>
+<h3>Output</h3>
+<p>The final output should look something like this:</p>
+<table>
+<thead>
+<tr>
+<th>symbol</th>
+<th>count</th>
+<th>sci_name</th>
+<th>common_name</th>
+<th>Family</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ABCO</td>
+<td>1</td>
+<td>Abies concolor (Gord. &amp; Glend.) Lindl. ex Hildebr.</td>
+<td>white fir</td>
+<td>Pinaceae</td>
+</tr>
+<tr>
+<td>ACHY</td>
+<td>24</td>
+<td>Achnatherum hymenoides (Roem. &amp; Schult.) Barkworth</td>
+<td>Indian ricegrass</td>
+<td>Poaceae</td>
+</tr>
+<tr>
+<td>ACMI2</td>
+<td>8</td>
+<td>Achillea millefolium L.</td>
+<td>common yarrow</td>
+<td>Asteraceae</td>
+</tr>
+<tr>
+<td>ACRE3</td>
+<td>1</td>
+<td>Acroptilon repens (L.) DC.</td>
+<td>hardheads</td>
+<td>Asteraceae</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Write the File</h2>
+<pre><code class="language-{r}">write_csv(final_merged_list, &quot;output/species_richness_plant_list_8312018.csv&quot;)
+
+</code></pre>
+<h2>Plot</h2>
+<h3>get rid of unknowns</h3>
+<pre><code class="language-{r}">for_plot_cl&lt;-final_merged_list%&gt;%
+  filter(!str_detect(symbol, &quot;AF&quot;), !str_detect(symbol,&quot;AG01&quot;), !str_detect(symbol,&quot;PF&quot;), !str_detect(symbol, &quot;PG&quot;), !str_detect(symbol, &quot;SH&quot;), !str_detect(symbol,&quot;SU&quot;))%&gt;%
+  arrange(desc(symbol))
+for_plot_cl
+</code></pre>
+<h3>Plot the result and save a copy.</h3>
+<pre><code class="language-{r}">ggplot(for_plot_cl, aes(reorder(symbol, num_occur), num_occur))+
+  coord_flip()+
+  theme_minimal()+
+  geom_col(fill = &quot;#581845&quot;)
+
+ggsave(&quot;output/frequency_by_symbol.jpg&quot;, width = 4, height = 20, units = &quot;in&quot;)
+</code></pre>
+<h2>The final Result</h2>
+<figure><a href="/img/r/assets/barplot/frequency_by_symbol.jpg"><img src="/img/r/assets/barplot/frequency_by_symbol.jpg" alt="A column plot of all of the plants and the number of times they have occurred throughout our field office"></a></figure>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2018-08-31-working-with-DIMA/ -->
+  </body>
+</html>

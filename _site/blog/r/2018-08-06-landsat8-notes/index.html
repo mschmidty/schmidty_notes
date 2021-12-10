@@ -1,0 +1,134 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working With Landsat8 Data from the USGS</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">Working With Landsat8 Data from the USGS</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">August 06, 2018</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/landsat/" class="tag-list-tag">Landsat</a></li>
+      
+        
+        <li><a href="/tags/gis/" class="tag-list-tag">GIS</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>We are trying to monitor drought in sage-grouse habitat. Because we don't have historic on the ground data collection, I thought that it would be good to try and do this with landsat data. Landsat data is collected by the USGS and NASA about once ever 16 days.</p>
+<p>The following are some notes on learning about the landsat dataset and how to access it in R.</p>
+<h2>Packages</h2>
+<p>I used the <a href="https://www.rdocumentation.org/packages/getlandsat/versions/0.2.0">getlandsat</a> r package.</p>
+<p>Here are the specifications for downloading an image:</p>
+<figure><a href="/img/assets/images/landsat/landsat_code.PNG"><img src="/img/assets/images/landsat/landsat_code.PNG" alt="landsat file specifications"></a></figure>
+<h3>Figuring out what tile you need.</h3>
+<p>The first thing you need to do if find out what tile of landsat data that you need. To do that, the dataset is stored in a file naming convention that allows you to query the data. The convention relies on the (World Reference System 2)[<a href="https://landsat.usgs.gov/what-worldwide-reference-system-wrs">https://landsat.usgs.gov/what-worldwide-reference-system-wrs</a>], for which a grid kml can be found (here)[<a href="https://landsat.usgs.gov/pathrow-shapefiles">https://landsat.usgs.gov/pathrow-shapefiles</a>].</p>
+<h3>Finding the groundstation IDs</h3>
+<p>The code for the US is LGN (Note: it shows on the site that the site name is LGS, which didn't work).  Others Can be founde (here)[<a href="https://landsat.usgs.gov/igs-network">https://landsat.usgs.gov/igs-network</a>].</p>
+<h3>Version - VV</h3>
+<p>The example I found uses: 00, so I used that as well. It worked, not sure why.</p>
+<h3>File types - <code>_FT</code></h3>
+<p>I used <code>_B5</code>.  I think this refers to the band of the image it is.  But I'm not sure.</p>
+<h2>Downloading and using images</h2>
+<p>Like I said above, I used the <a href="https://www.rdocumentation.org/packages/getlandsat/versions/0.2.0">getlandsat</a> r package.  It made downloading the data a bit easier.</p>
+<p>I was interested in an area is southwest Colorado.  The Tile ID was ppp=036, rrr=033.  So my attributes were as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Description</th>
+<th style="text-align:center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Landsat</td>
+<td style="text-align:center">L</td>
+</tr>
+<tr>
+<td>Sensor</td>
+<td style="text-align:center">C</td>
+</tr>
+<tr>
+<td>Mission</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td>Position - ppp</td>
+<td style="text-align:center">036</td>
+</tr>
+<tr>
+<td>Position - rrr</td>
+<td style="text-align:center">033</td>
+</tr>
+<tr>
+<td>Year</td>
+<td style="text-align:center">2016</td>
+</tr>
+<tr>
+<td>Aquisition Day of Year</td>
+<td style="text-align:center">008</td>
+</tr>
+<tr>
+<td>Ground Station</td>
+<td style="text-align:center">LGN</td>
+</tr>
+<tr>
+<td>Version</td>
+<td style="text-align:center">00</td>
+</tr>
+<tr>
+<td>File Type</td>
+<td style="text-align:center">_B5</td>
+</tr>
+<tr>
+<td>Extension</td>
+<td style="text-align:center">.TIFF</td>
+</tr>
+</tbody>
+</table>
+<p>Using the lsat_image functions, my script to download the data was:</p>
+<pre><code class="language-r">lsat_image(x = &quot;LC80360332015008LGN00_B5.TIF&quot;)
+</code></pre>
+<p>Now a few things that you can do.  First I just wanted to see the files.  The nice thing about the getlsatimages package is it caches your images in a file on your computer so that you don't have to download each image every time.  But its a little weird in that you have to load your images after downloading them from the cache.  You do this by first seeing what images you have in your cache:</p>
+<pre><code class="language-r">lsat_cache_list()
+
+##[1]&quot;C:\\Users\\mschmidt\\AppData\\Local\\landsat-pds\\landsat-pds\\Cache/L8/010/117/LC80101172015002LGN00/LC80101172015002LGN00_B5.TIF&quot;
+##[2]&quot;C:\\Users\\mschmidt\\AppData\\Local\\landsat-pds\\landsat-pds\\Cache/L8/036/033/LC80360332015008LGN00/LC80360332015008LGN00_B5.TIF&quot;
+</code></pre>
+<hr>
+<h2>Resources</h2>
+<ul>
+<li><a href="http://gif.berkeley.edu/documents/Landsat%20Band%20Information.pdf">Landsat Band Breakdown and Useful Combinations</a></li>
+<li><a href="http://rspatial.org/analysis/rst/9-remotesensing.html">Working With Landsat Imagery in R</a></li>
+<li><a href="https://docs.opendata.aws/landsat-pds/readme.html">AWS Docs on Accessing Landsat</a></li>
+</ul>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2018-08-06-landsat8-notes/ -->
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#30daymapchallange Day Green</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">#30daymapchallange Day Green</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">August 27, 2020</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/ggplot/" class="tag-list-tag">ggplot</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>For the seventh day of the <a href="https://twitter.com/hashtag/30daymapchallange">#30daymapchallange</a>, I made a map using <a href="https://cran.r-project.org/web/packages/OpenStreetMap/index.html">Open Street Map Data</a> to map my old neighborhood.  I feel lucky to have grown up near mountains in a city.</p>
+<figure><a href="/img/r/assets/maps/07-green-my-neighborhood.png"><img src="/img/r/assets/maps/07-green-my-neighborhood.png" alt="My neighborhood"></a></figure>
+<p>Here are my scripts. I have included two versions.  One is with a logo, trying to make it look pretty with just R.  The second is me giving up and using Adobe Illustrator to add the title.</p>
+<pre><code class="language-r"># Set Up and Load Libraries
+library(osmdata)
+library(tidyverse)
+library(sf)
+library(schmidtytheme)
+
+theme_set(theme_schmidt()+
+            theme(
+              text=element_text(family=&quot;Public Sans Light&quot;)
+            ))
+
+#Explore the OSM data
+available_features()
+available_tags(&quot;natural&quot;)
+
+
+# Query each Layer
+q &lt;- getbb(&quot;Salt Lake City&quot;) %&gt;%
+  opq() %&gt;%
+  add_osm_feature(&quot;leisure&quot;, &quot;park&quot;)
+
+q2&lt;- opq(&quot;Salt Lake City&quot;)%&gt;%
+  add_osm_feature(&quot;highway&quot;, c(&quot;residential&quot;, &quot;services&quot;))
+
+q3&lt;- getbb(&quot;Salt Lake City&quot;)%&gt;%
+  opq()%&gt;%
+  add_osm_feature(&quot;highway&quot;, c(&quot;secondary&quot;, &quot;tertiary&quot;))
+
+q4&lt;- opq(&quot;Salt Lake City&quot;)%&gt;%
+  add_osm_feature(&quot;highway&quot;, c(&quot;primary&quot;))
+
+# Convert Each layer into a sf object and reproject
+parks_sf &lt;- osmdata_sf(q)$osm_polygons%&gt;%
+  st_transform(&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83&quot;)
+
+residential_sf&lt;-osmdata_sf(q2)$osm_lines%&gt;%
+  st_transform(&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83&quot;)
+  
+tertiary_sf&lt;-osmdata_sf(q3)$osm_lines%&gt;%
+  st_transform(&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83&quot;)
+
+primary_sf&lt;-osmdata_sf(q4)$osm_lines%&gt;%
+  st_transform(&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83&quot;)
+
+## Create buffers of my old neighborhood and clip each layer
+street&lt;-tibble(
+  place = c(&quot;Salt Lake City&quot;),
+  lat = c(40.7487517),
+  lon = c(-111.861731)
+)%&gt;%
+  st_as_sf(coords = c(&quot;lon&quot;, &quot;lat&quot;), crs = 4326)%&gt;%
+  st_transform(&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83&quot;)
+
+hood&lt;-street%&gt;%
+  st_buffer(4200)
+
+hood_plus&lt;-street%&gt;%
+  st_buffer(5000)
+
+parks&lt;-parks_sf%&gt;%
+  st_intersection(hood)
+  
+residential &lt;- residential_sf%&gt;%
+  st_intersection(hood)
+
+tertiary&lt;-tertiary_sf%&gt;%
+  st_intersection(hood)
+
+primary&lt;-primary_sf%&gt;%
+  st_intersection(hood_plus)
+
+#Plot
+background_color &lt;- &quot;#EAEDD2&quot;
+
+ggplot()+
+  geom_sf(data = parks, color = &quot;transparent&quot;, fill = &quot;#2D2D2D&quot;, alpha = 0.8)+
+  geom_sf(data = residential, color = &quot;#2D2D2D&quot;, size=0.2)+
+  geom_sf(data = tertiary, color = &quot;#019214&quot;, alpha = 0.7)+
+  geom_sf(data = primary, color = &quot;#019214&quot;, size = 0.8)+
+  ##geom_sf(data = hood, fill = &quot;transparent&quot;, color = &quot;#ffffff&quot;, size = 0.5)+
+  labs(
+    title = &quot;MY YOUTH&quot;, 
+    subtitle = &quot;SALT LAKE CITY, UT&quot;,
+    caption = &quot;#30DayMapChallenge | @mschmidty | Source: Open Street Map&quot;
+  )+
+  coord_sf()+theme(
+    plot.title = element_text(family = &quot;Public Sans Thin&quot;, size = 100, color = &quot;#2D2D2D&quot;, margin=margin(0,0,0,0)),
+    plot.subtitle = element_text(family = &quot;Public Sans Light&quot;, face = &quot;plain&quot;,margin=margin(10,0,65,0), size = 12),
+    plot.caption = element_text(hjust = 1, margin=margin(35,0,0,0)),
+    panel.grid.major = element_line(color=&quot;transparent&quot;),
+    panel.background = element_rect(fill = background_color, color = &quot;transparent&quot;),
+    plot.background = element_rect(fill = background_color, color = &quot;transparent&quot;),
+    axis.text = element_blank(),
+    plot.margin = unit(c(85, 100, 35, 100), &quot;pt&quot;)
+  )+
+  ggsave(&quot;output/07-green-my-neighborhood.png&quot;, type=&quot;cairo&quot;)
+
+
+#Version 2 - Using AI for Text and different crop.
+primary&lt;-primary_sf%&gt;%
+  st_intersection(hood_plus)
+
+ggplot()+
+  geom_sf(data = parks, color = &quot;transparent&quot;, fill = &quot;#2D2D2D&quot;, alpha = 0.8)+
+  geom_sf(data = residential, color = &quot;#2D2D2D&quot;, size=0.2)+
+  geom_sf(data = tertiary, color = &quot;#019214&quot;, alpha = 0.7)+
+  geom_sf(data = primary, color = &quot;#019214&quot;, size = 0.8)+
+  coord_sf()+theme(
+    plot.title = element_text(family = &quot;Public Sans Thin&quot;, size = 100, color = &quot;#2D2D2D&quot;, margin=margin(0,0,0,0)),
+    plot.subtitle = element_text(family = &quot;Public Sans Light&quot;, face = &quot;plain&quot;,margin=margin(10,0,65,0), size = 12),
+    plot.caption = element_text(hjust = 1, margin=margin(35,0,0,0)),
+    panel.grid.major = element_line(color=&quot;transparent&quot;),
+    panel.background = element_rect(fill = background_color, color = &quot;transparent&quot;),
+    plot.background = element_rect(fill = background_color, color = &quot;transparent&quot;),
+    axis.text = element_blank(),
+    plot.margin = unit(c(85, 100, 35, 100), &quot;pt&quot;)
+  )+ggsave(&quot;output/07-green-my-neighborhoodV2.png&quot;, type=&quot;cairo&quot;)
+
+</code></pre>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2021-01-21-osm-data-and-my-neighborhood/ -->
+  </body>
+</html>

@@ -1,0 +1,762 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will There be a Raftable Release out of McPhee Reservoir</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <header>
+      
+    </header>
+
+    <main>
+      <article class="post-content">
+  <header class="post-header">
+    <h1 class="post-title">Will There be a Raftable Release out of McPhee Reservoir</h1>
+    <div class="post-meta">
+      <time datetime="Invalid DateTime" class="post-time">February 09, 2020</time>
+      <span>| tags:</span>
+      <ul class="tags-list post-tag-list">
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/r/" class="tag-list-tag">R</a></li>
+      
+        
+        <li><a href="/tags/machine-learning/" class="tag-list-tag">Machine Learning</a></li>
+      
+        
+        <li><a href="/tags/ggplot/" class="tag-list-tag">ggplot</a></li>
+      
+      </ul>
+    </div>
+  </header>
+  <p>I live next to the Dolores River. It’s an often overlooked gem of the southwest. It runs from just outside Rico, Colorado at its headwaters to the Colorado River near Moab, Utah. Rafting it is an experience.</p>
+<p>As of late the river has become something of a destination for the rafting community. Most sections of the river are mellow and scenic. But two sections have class 4 rapids that keep things interesting: Snaggletooth Rapid and State Line Rapid (also known as the Chicken Raper Rapid).</p>
+<p>In 1985 the McPhee Dam was completed, forever changing the flow of the lower Dolores River. Today, farmers, ranchers adn local ranchers rely on water from the McPhee Dam to to grow crops and raise livestock. As a result, the primary goal of reservoir managers is to keep as much water in the reservoir as possible. Raftable and ecological releases are secondary.This has resulted in several years where the reservoir has not filled and there have been no raftable releases. Other years reservoir managers say that the there will be no release and we get a release.</p>
+<p>Because the Dolores is so loved in our community, there are a few people who try and predict when the Dolores will have a raftable release. Given my love of R, I thought it would be fun to do myself. The following are notes on how I built my model. I do my best to go over each step and detail why and how I included each covariate.</p>
+<h2>Load Packages</h2>
+<p>Here I load packages and set a custom theme. You can skip this part and just add in <code>set_theme(theme_light)</code> if you want to skip this part.</p>
+<pre><code class="language-r">library(tidyverse) ## For all the data cleaning work.
+library(lubridate) ## For working with dates.
+library(extrafont) ## For Font Graphics
+options(scipen = 999)
+
+t&lt;-theme_light()+
+  theme(
+    text=element_text(family = &quot;Poppins&quot;, color = &quot;#FFFFFF&quot;),
+    plot.margin = unit(c(0.5,0.5,0.5,0.5), &quot;cm&quot;),
+    plot.title = element_text(face = &quot;bold&quot;, size = rel(2.3), color = &quot;#FFFFFF&quot;),
+    plot.subtitle = element_text(color = &quot;#7A7A7A&quot;, size = rel(1.3), margin = margin(t = 0, r = 0, b = 15, l = 0)),
+    plot.background = element_rect(fill = &quot;#222222&quot;, color = &quot;#FFFFFF&quot;),
+    panel.grid.major = element_line(color = &quot;#555555&quot;),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = &quot;#222222&quot;, color = &quot;#222222&quot;),
+    panel.border = element_blank(),
+    axis.text = element_text(size = rel(0.8), colour = &quot;#CCCCCC&quot;),
+    axis.title.x = element_text(margin = margin(t = 5, r = 0, b = 10, l = 0)),
+    axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 20)),
+    legend.title = element_text(face = &quot;bold&quot;),
+    legend.text = element_text(color = &quot;#222222&quot;),
+    legend.direction = &quot;horizontal&quot;,
+    legend.position=&quot;bottom&quot;,
+    legend.key.width = unit(5, &quot;cm&quot;),
+    legend.key.height = unit(0.3, &quot;cm&quot;),
+    legend.box = &quot;vertical&quot;,
+    plot.caption = element_text(color = &quot;#7A7A7A&quot;, size = rel(0.9))
+  )
+theme_set(t)
+</code></pre>
+<h1>Getting a variable to predict</h1>
+<h3>Getting Stream Guage Data Below McPhee Dam from the USGS</h3>
+<pre><code class="language-r">url&lt;-paste0(&quot;https://waterservices.usgs.gov/nwis/dv/?format=rdb&amp;sites=09169500,%2009166500&amp;startDT=1985-02-01&amp;endDT=&quot;, Sys.Date(), &quot;&amp;statCd=00003&amp;siteType=ST&amp;siteStatus=all&quot;)
+
+flow_data&lt;-read_tsv(url, skip = 35)%&gt;%
+  select(2:5)%&gt;%
+  rename(site_id = 1, date = 2, flow=3, code = 4)%&gt;%
+  mutate(site_id = ifelse(site_id == &quot;09166500&quot;, &quot;Dolores&quot;, &quot;Bedrock&quot;))%&gt;%
+  drop_na()
+
+bedrock_flow&lt;-flow_data%&gt;%
+  filter(site_id == &quot;Bedrock&quot;&amp; year(date)&gt;1986)%&gt;%
+  select(-code)
+
+bedrock_flow
+</code></pre>
+<pre><code class="language-r">## # A tibble: 12,098 x 3
+##    site_id date        flow
+##    &lt;chr&gt;   &lt;date&gt;     &lt;dbl&gt;
+##  1 Bedrock 1987-01-01   120
+##  2 Bedrock 1987-01-02   130
+##  3 Bedrock 1987-01-03   120
+##  4 Bedrock 1987-01-04   120
+##  5 Bedrock 1987-01-05   140
+##  6 Bedrock 1987-01-06   140
+##  7 Bedrock 1987-01-07   130
+##  8 Bedrock 1987-01-08   130
+##  9 Bedrock 1987-01-09   110
+## 10 Bedrock 1987-01-10    95
+## # … with 12,088 more rows
+</code></pre>
+<p>I want to predict the raftable days released below McPhee Dam. To do this I need flow data from a gauge below McPhee. Flow gauge data will tell me which days had enough flow to raft and which days did not. There are a few gauges to to choose from within the extensive USGS flow gauge system, but the oldest is at Bedrock, CO. To get the data I used the USGS Water Services REST API. There’s an R package that you can used to get the data, but since I’d used the API a few times before and I knew that the data could be returned in tab-separated format, I just used the <code>readr::read_tsv()</code> function.</p>
+<p><em>Walk Through Notes:</em></p>
+<ul>
+<li>The first step is to build the URL for the API. I used the USGS Rest API builder tool to get the right data.</li>
+<li>Then used the <code>read_tsv()</code> function to pull data from the API skpping the first 35 lines of comments.</li>
+<li>I then renamed the columns to something I could understand.</li>
+<li>And then convert the site_ids to Characters instead of numbers. I pulled data from above and below the dams because at the time I thought I might use the data from above the Dam later for another predictive variable.</li>
+<li>Then I drop all the missing values and subset the data to just below the dam.</li>
+</ul>
+<h3>Visualizing the flow</h3>
+<pre><code class="language-r">bedrock_flow%&gt;%
+  filter(year(date)&gt;2007)%&gt;%
+  ggplot(aes(date, flow))+
+  geom_line(color = &quot;#1AB8FF&quot;, size =1.2, alpha = 0.6)+
+  labs(title = &quot;Dolores Flows from 2008 to Present&quot;,
+       subtitle = &quot;USGS Flow Gauge Site 09169500 Near Bedrock, Colorado&quot;,
+       caption = &quot;Data aquired from the Bureau of Reclemation using the RNRCS package.&quot;,
+       y = &quot;Flow Rate (cfs)&quot;,
+       x = &quot;Year&quot;)
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-3-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-3-1.jpeg" alt="Dolores Flows from 2008 to Present"></a></figure>
+<h3>Subsetting the release</h3>
+<p>Next I needed to subset days where there is a raftable release.  Releases happen during spring runoff so I wanted to subset those days in the spring that had greater than 800 cfs (cubic feet per second) of flow.  I wanted to make sure to exclude non</p>
+<pre><code class="language-r">predicted_variable&lt;-bedrock_flow%&gt;%
+  filter(flow&gt;800 &amp; month(date) %in% c(3:7))%&gt;%
+  count(year(date))%&gt;%
+  rename(year = 1, raftable_releases = 2)
+
+predicted_variable
+</code></pre>
+<pre><code class="language-r">## # A tibble: 21 x 2
+##     year raftable_releases
+##    &lt;dbl&gt;             &lt;int&gt;
+##  1  1987                87
+##  2  1988                13
+##  3  1989                17
+##  4  1991                 9
+##  5  1992                61
+##  6  1993                99
+##  7  1994                35
+##  8  1995                89
+##  9  1997                82
+## 10  1998                63
+## # … with 11 more rows
+</code></pre>
+<p><em>Walk Through Notes:</em></p>
+<ul>
+<li>First we filter the data for flows above 1000 cfs and dated from March to July (most of the monsoons occur from august to October).</li>
+<li>Then we simply count the number of dates that are left by year.</li>
+</ul>
+<p>We now have the variable we want to predict. Now we need predictors.</p>
+<h1>Getting the predictive variables.</h1>
+<p>There are many variables that affect reservoir volume. Current Reservoir volume and snowpack are probably two of the more important variables that are reliably measured. Snowpack tells us how much water will eventually be coming into the reservoir in the spring and reservoir volume tells us how much water is currently in the reservoir and also how much water we will need to cause a spill. Spring rain would be another variable that would be great to include, but I don’t want to rely on weather forecasts that far out. So we will stick with snowpack and current reservoir volume.</p>
+<h2>Snow Depth</h2>
+<p>The <a href="https://en.wikipedia.org/wiki/SNOTEL">SNOTEL (Snow Telemetry)</a> network provides snow data for 730 sites across the country. There are several in the Dolores watershed that can give us a bunch of data on snowpack. For this we will use the handy dandy package <code>library(RNRCS)</code> (the NRCS is the government agency in the Department of Agriculture that manages the SNOTEL network)</p>
+<h3>Finding All Snotel Sites in the Dolores Watershed</h3>
+<p>First we need to find which SNOTEL sites are within the Dolores River watershed to inform how much water could end up in McPhee reservoir.</p>
+<pre><code class="language-r">library(RNRCS)
+meta_data&lt;-grabNRCS.meta(ntwrks = c(&quot;SNTL&quot;, &quot;SNTLT&quot;, &quot;SCAN&quot;))
+
+meta_data_unlist&lt;-meta_data[[1]]%&gt;%
+  as_tibble()
+
+meta_data_unlist
+</code></pre>
+<pre><code class="language-r">## # A tibble: 876 x 13
+##    ntwk  wyear state site_name ts    start enddate latitude longitude
+##    &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;chr&gt;     &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;    &lt;fct&gt;    
+##  1 SNTL  2019  AK    Frostbit… &quot;&quot;    2019… 2100-J… &quot;  61.7… -149.27  
+##  2 SNTL  2019  AK    McGrath   &quot;&quot;    2019… 2100-J… &quot;  62.9… -155.61  
+##  3 SNTL  2019  UT    Parleys … &quot;&quot;    2019… 2100-J… &quot;  40.7… -111.61  
+##  4 SNTL  2018  AK    East Pal… &quot;&quot;    2018… 2100-J… &quot;  61.6… -149.10  
+##  5 SNTL  2018  AK    Galena AK &quot;&quot;    2018… 2100-J… &quot;  64.7… -156.71  
+##  6 SNTL  2018  MT    JL Meadow &quot;&quot;    2017… 2100-J… &quot;  44.7… -113.12  
+##  7 SNTL  2018  NV    ONeil Cr… &quot;&quot;    2018… 2100-J… &quot;  41.8… -115.08  
+##  8 SNTL  2017  AK    Flower M… &quot;&quot;    2017… 2100-J… &quot;  59.4… -136.28  
+##  9 SNTL  2017  CA    Fredonye… &quot;&quot;    2016… 2100-J… &quot;  40.6… -120.61  
+## 10 SNTL  2017  UT    Bobs Hol… &quot;&quot;    2016… 2100-J… &quot;  38.9… -112.15  
+## # … with 866 more rows, and 4 more variables: elev_ft &lt;fct&gt;, county &lt;fct&gt;,
+## #   huc &lt;fct&gt;, site_id &lt;chr&gt;
+</code></pre>
+<p><strong>grabNRCS.meta</strong> - grabs all sites within the Snotel (“SNTL”), Snotel Lite, (“SNTLT”), and Scan (“SCAN”) systems. I’m really just interested in the snotel sites, but I wasn’t really sure what Snotel Lite or Scan was so I loaded them just in case. <code>grabNRCS</code> returns a single list, se we subset just the first item of the list.</p>
+<pre><code class="language-r">dolores_sites&lt;-meta_data_unlist%&gt;%
+  filter(state ==&quot;CO&quot;, str_detect(huc, &quot;140300&quot;))%&gt;%
+  mutate(site_id_num = as.numeric(str_match_all(site_id, &quot;[0-9]+&quot;)))
+
+dolores_sites
+</code></pre>
+<pre><code class="language-r">## # A tibble: 6 x 14
+##   ntwk  wyear state site_name ts    start enddate latitude longitude
+##   &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;chr&gt;     &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;    &lt;fct&gt;    
+## 1 SNTL  2011  CO    Black Me… &quot;&quot;    2011… 2100-J… &quot;  37.7… -108.18  
+## 2 SNTL  2005  CO    Sharksto… &quot;&quot;    2004… 2100-J… &quot;  37.5… -108.11  
+## 3 SNTL  1986  CO    El Dient… &quot;&quot;    1985… 2100-J… &quot;  37.7… -108.02  
+## 4 SNTL  1986  CO    Scotch C… &quot;&quot;    1985… 2100-J… &quot;  37.6… -108.01  
+## 5 SNTL  1980  CO    Lizard H… &quot;&quot;    1979… 2100-J… &quot;  37.8… -107.92  
+## 6 SNTL  1980  CO    Lone Cone &quot;&quot;    1979… 2100-J… &quot;  37.8… -108.20  
+## # … with 5 more variables: elev_ft &lt;fct&gt;, county &lt;fct&gt;, huc &lt;fct&gt;,
+## #   site_id &lt;chr&gt;, site_id_num &lt;dbl&gt;
+</code></pre>
+<p><strong>dolores_sites</strong> - We then filter all sites in Colorado (“CO”) and detect all of the huc values with 140300. To pull data from the sites we will need a site ID number. The Meta data has the site IDs in a string that contains characters and numbers.</p>
+<pre><code class="language-r">dolores_site_ids&lt;-dolores_sites%&gt;%
+  pull(site_id_num)%&gt;%
+  unlist()%&gt;%
+  as.numeric()
+
+dolores_site_ids
+</code></pre>
+<pre><code class="language-r">## [1] 1185 1060  465  739  586  589
+</code></pre>
+<p><strong>dolores_site_ids</strong> - The last step is to convert the <code>site_id_num</code> variable into a vector so that we can pull data from each site in the next step.</p>
+<h2>Pulling the data from the snotel sites</h2>
+<h3>Function to Pull All Sites</h3>
+<p>First we need a function that we can loop over each of the snotel site IDs and pull data for each of one. <code>grabNRCS.data</code> does not allow you to pull data from more than one site at a time.</p>
+<pre><code class="language-r">get_snotl_data&lt;-function(site_id){
+  grabNRCS.data(network = &quot;SNTL&quot;,
+              site_id = site_id,
+              timescale = &quot;daily&quot;,
+              DayBgn = '1985-01-01',
+              DayEnd = Sys.Date()
+              )%&gt;%
+    as_tibble()%&gt;%
+    mutate(site_id_num = site_id)
+}
+</code></pre>
+<p>To get data from each site we need to use <code>grabNRCS.data()</code> function. <code>grabNRCS.data</code> takes:</p>
+<ul>
+<li><code>network</code> - the network we want to pull from.</li>
+<li>the <code>site_id</code> which we produced a list of in the last step.</li>
+<li><code>DayBgn</code> - The first day you want to pull data from.</li>
+<li><code>DayEnd</code> - the Last date you want data from. Here we use the system data (Today).</li>
+</ul>
+<p>We then convert the data to a tibble for better output in Rstudio and add a column with <code>mutate</code> with the site_id number for working with the data later.</p>
+<h3>Getting ALL the data with lapply</h3>
+<pre><code class="language-r">all_sntl_data&lt;-lapply(dolores_site_ids, get_snotl_data)%&gt;%
+  bind_rows()
+
+all_sntl_data
+</code></pre>
+<pre><code class="language-r">## # A tibble: 58,531 x 22
+##    Date  Air.Temperature… Air.Temperature… Air.Temperature…
+##    &lt;chr&gt;            &lt;int&gt;            &lt;int&gt;            &lt;int&gt;
+##  1 2012…               46               52               42
+##  2 2012…               46               53               42
+##  3 2012…               52               62               44
+##  4 2012…               52               61               46
+##  5 2012…               52               64               46
+##  6 2012…               54               64               47
+##  7 2012…               53               64               49
+##  8 2012…               52               61               47
+##  9 2012…               54               63               49
+## 10 2012…               50               61               42
+## # … with 58,521 more rows, and 18 more variables:
+## #   Air.Temperature.Observed..degF..Start.of.Day.Values &lt;int&gt;,
+## #   Precipitation.Accumulation..in..Start.of.Day.Values &lt;dbl&gt;,
+## #   Snow.Depth..in..Start.of.Day.Values &lt;int&gt;,
+## #   Snow.Water.Equivalent..in..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Moisture.Percent..4in..pct..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Moisture.Percent..8in..pct..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Moisture.Percent..20in..pct..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Moisture.Percent..40in..pct..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Temperature.Observed..4in..degF..Start.of.Day.Values &lt;int&gt;,
+## #   Soil.Temperature.Observed..8in..degF..Start.of.Day.Values &lt;int&gt;,
+## #   Soil.Temperature.Observed..20in..degF..Start.of.Day.Values &lt;int&gt;,
+## #   Soil.Temperature.Observed..40in..degF..Start.of.Day.Values &lt;int&gt;,
+## #   site_id_num &lt;dbl&gt;,
+## #   Soil.Moisture.Percent..2in..pct..Start.of.Day.Values &lt;dbl&gt;,
+## #   Soil.Temperature.Observed..2in..degF..Start.of.Day.Values &lt;int&gt;,
+## #   Wind.Direction.Average..degree. &lt;int&gt;, Wind.Speed.Average..mph. &lt;dbl&gt;,
+## #   Wind.Speed.Maximum..mph. &lt;dbl&gt;
+</code></pre>
+<p><code>lapply</code> takes:</p>
+<ul>
+<li><code>dolores_site_ids</code> a vector of values to loop over.</li>
+<li><code>get_snotl_data</code> a function to inject each of the vector values into one at a time.</li>
+</ul>
+<p><code>lapply</code> returns a list so the final step is to <code>bind_rows</code> which merges all of the columns.</p>
+<h3>Cleaning the Data</h3>
+<p>I’m going to predict number of days the Dolores Runs in a year, so I need to convert the snow data from daily data from multiple sites to annual data from all sites. I’m assuming that max snow water equivalant correlates best with runoff in this dataset so we will use that to summarize each year.</p>
+<pre><code class="language-r">se_site&lt;-all_sntl_data%&gt;%
+  select(Date, Snow.Depth..in..Start.of.Day.Values, Snow.Water.Equivalent..in..Start.of.Day.Values, site_id_num)%&gt;%
+  mutate(
+    date = as.Date(Date)
+    )%&gt;%
+  rename(snow_depth = 2, snow_water_eq=3)%&gt;%
+  filter(site_id_num %in% c(465, 586, 589, 739))
+
+se_site
+</code></pre>
+<pre><code class="language-r">## # A tibble: 50,182 x 5
+##    Date       snow_depth snow_water_eq site_id_num date      
+##    &lt;chr&gt;           &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt; &lt;date&gt;    
+##  1 1986-08-05         NA            NA         465 1986-08-05
+##  2 1986-08-06         NA             0         465 1986-08-06
+##  3 1986-08-07         NA             0         465 1986-08-07
+##  4 1986-08-08         NA             0         465 1986-08-08
+##  5 1986-08-09         NA             0         465 1986-08-09
+##  6 1986-08-10         NA             0         465 1986-08-10
+##  7 1986-08-11         NA             0         465 1986-08-11
+##  8 1986-08-12         NA             0         465 1986-08-12
+##  9 1986-08-13         NA             0         465 1986-08-13
+## 10 1986-08-14         NA             0         465 1986-08-14
+## # … with 50,172 more rows
+</code></pre>
+<ul>
+<li>First we select the columns that contain the Date, Snow Depth and Snow water Equivalant. I don’t end up using Snow depth because it only goes back to around 2000 for all sites while snow water equivalant goes back to 1986.</li>
+<li><code>mutate</code> add a date field that is formatted as a date.</li>
+<li><code>rename</code> snow depth and snow water equivalant to something more manageable.</li>
+<li>The last thing we do is subset the sites to only those that have been around since 1986 using <code>filter</code>.</li>
+</ul>
+<p>Let’s take a look at these sites really quick to see how they look.</p>
+<pre><code class="language-r">se_site%&gt;%
+  filter(year(date)&gt;2007)%&gt;%
+  ggplot(aes(date, snow_water_eq, color = as.factor(site_id_num)))+
+  geom_line(size = 1.5, alpha = 0.5)+
+  theme_light()
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-11-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-11-1.jpeg" alt="Quick Plot to Look at River Flows"></a></figure>
+<pre><code class="language-r">se_site_year&lt;-se_site%&gt;%
+  group_by(year(date), site_id_num)%&gt;%
+  summarize(max_se = max(snow_water_eq, na.rm = T))%&gt;%
+  ungroup()%&gt;%
+  rename(year=1)
+
+se_site_year
+</code></pre>
+<pre><code class="language-r">## # A tibble: 142 x 3
+##     year site_id_num max_se
+##    &lt;dbl&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+##  1  1985         586   21.6
+##  2  1985         589   23.5
+##  3  1986         465    6.3
+##  4  1986         586   19.8
+##  5  1986         589   20.8
+##  6  1986         739    5.1
+##  7  1987         465   19.1
+##  8  1987         586   19.1
+##  9  1987         589   22  
+## 10  1987         739   20.1
+## # … with 132 more rows
+</code></pre>
+<ul>
+<li>The next several steps are where the sausage is made. First I want the max value for snow water equivalant for each site per year. To do this, we <code>group_by</code> <code>year(date)</code> which uses the <code>date</code> field to group the data and then. We also want to group by site_id_num so we add that to the <code>group_by</code> as well.</li>
+<li>We can then summarize by our groups. Here we want to make a variable caleed max_se which is the max of the <code>snow_water_eq</code> field within the group we described above.</li>
+<li>Lastly we <code>ungroup</code> the data (group_by can cause nasty problems if not ungrouped) and rename the <code>year(date)</code> column to <code>year</code>.</li>
+</ul>
+<h3>Combining a subset of sites</h3>
+<p>To simplify things we will average the sites. I think if I did this again I would not average the sites but have each site be a predictor.</p>
+<pre><code class="language-r">avg_snwater_eq&lt;-se_site_year%&gt;%
+  filter(year&gt;1986)%&gt;%
+  group_by(year)%&gt;%
+  summarize(avg_snow_water_e = mean(max_se))%&gt;%
+  ungroup()
+
+avg_snwater_eq
+</code></pre>
+<pre><code class="language-r">## # A tibble: 34 x 2
+##     year avg_snow_water_e
+##    &lt;dbl&gt;            &lt;dbl&gt;
+##  1  1987            20.1
+##  2  1988            11.4
+##  3  1989            16.3
+##  4  1990             9.28
+##  5  1991            16.5
+##  6  1992            15.5
+##  7  1993            25.4
+##  8  1994            12.3
+##  9  1995            21.8
+## 10  1996            13.6
+## # … with 24 more rows
+</code></pre>
+<ul>
+<li>Only 4 of the 6 sites in the basin have values all the way back to 1986, the year that the McPhee Dam was put in.</li>
+<li>We then <code>group_by</code> year because we want one value per year.</li>
+<li>Then <code>summarize</code> the max snow water equivalent (<code>max_se</code>) - created in the last step - as a mean of the four site maxes per year.</li>
+<li>And then, as always, <code>ungroup</code>.</li>
+</ul>
+<h3>Summary of Snotel Snow depth</h3>
+<p>Now we have our first predictive variable: average max snow water equivalent four three snotel sites in the Dolores River watershed.</p>
+<p>The steps we took to get that data: 1. We used the <code>RNRCS</code> package to… 2. Get all sites in the Snotel Network with <code>grabNRCS.meta()</code> 3. We then subset those sites to just those in the Dolores watershed. 4. We then used the site_ids to get daily snow data from each site. 5. We combined each sites data into one dataframe. 6. We then grouped the data to get the max snow water equivalent for each site for each year. 7. We then averaged the maxes from four sites to get one average snow water equivalent per year.</p>
+<h2>Prediction of Future Snowpack</h2>
+<p>We’ll use the {fable} package for timeseries forecasting.</p>
+<pre><code class="language-r">library(fable) #For prediction
+</code></pre>
+<p>For forecasting we need an average of all four sites per day. We want to predict what the average will be.</p>
+<pre><code class="language-r">avg_sn&lt;-se_site%&gt;%
+  filter(year(Date)&gt;1987)%&gt;%
+  group_by(Date)%&gt;%
+  summarize(avg_sn_eq =  mean(snow_water_eq, rm.na = T))%&gt;%
+  ungroup()%&gt;%
+  mutate(Date = as.Date(Date))
+
+
+avg_sn
+</code></pre>
+<pre><code class="language-r">## # A tibble: 11,741 x 2
+##    Date       avg_sn_eq
+##    &lt;date&gt;         &lt;dbl&gt;
+##  1 1988-01-01      4.1
+##  2 1988-01-02      4.18
+##  3 1988-01-03      4.38
+##  4 1988-01-04      4.53
+##  5 1988-01-05      4.82
+##  6 1988-01-06      5.4
+##  7 1988-01-07      5.6
+##  8 1988-01-08      5.65
+##  9 1988-01-09      5.8
+## 10 1988-01-10      5.9
+## # … with 11,731 more rows
+</code></pre>
+<ul>
+<li>We filter years after 1987 because we don’t want the year that they were filling the reservior to influence the prediction.</li>
+<li>Next we group by <code>Date</code> which is daily and then <code>summarize</code>, averaging all four sites for that day. We <code>ungroup</code> to prevent weird stuff from happening.</li>
+<li>And lastly we convert the <code>Date</code> column, which for some reaon was converted to a <code>character</code>, to an actual date with <code>as.Date</code>.</li>
+</ul>
+<p>Let see what it looks like:</p>
+<pre><code class="language-r">avg_sn%&gt;%
+  ggplot(aes(Date, avg_sn_eq))+
+  geom_line(color = &quot;#1AB8FF&quot;, size = 2, alpha = 0.5)+
+  labs(title = &quot;Average Snow Water Equivalant&quot;,
+       subtitle = &quot;From four Snotel Sites in the Dolores River watershed&quot;,
+       y = &quot;Avg. Snow Water Equivalant&quot;)
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-16-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-16-1.jpeg" alt="Average Snow Water Equivalant in Dolores Watershed, 1986 to present"></a></figure>
+<p>To do a timeseries forcast we need to convert the data into <code>tsibble</code> format. I don’t know a ton about tsibbles. I think they are basically just a tibble with an <code>time</code> index.</p>
+<pre><code class="language-r">avg_sn_ts&lt;-avg_sn%&gt;%
+  as_tsibble(index = Date)
+</code></pre>
+<p>Next we will make our model. I by no means am an expert at forecasting (this took me an embarassingly long time). Many of my initial tries failed using a variety of other models. I finally got an auto <code>ARIMA</code> forecast to work using fourier. If you want to learn more about forecasting, check out <a href="https://robjhyndman.com/hyndsight/fable/">Rob Hyndman’s Blog</a>.</p>
+<pre><code class="language-r">fit&lt;-avg_sn_ts%&gt;%
+  model(
+    arima = ARIMA(avg_sn_eq~fourier(&quot;year&quot;, K = 15))
+  )
+
+fit%&gt;%
+  forecast(h = &quot;3 months&quot;)%&gt;%
+  autoplot(avg_sn_ts%&gt;%filter(year(Date)&gt;2018))+
+  geom_line(color = &quot;#ffffff&quot;, size = 2)+
+  labs(title = &quot;Snowpack Prediction&quot;,
+       subtitle = &quot;Dolores River watershed Snotel sites&quot;,
+       y = &quot;Avg. Snow Whater Equivalant&quot;)
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-18-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-18-1.jpeg" alt="Snow water equivalant forecast for the next six months."></a></figure>
+<p>Looking at the forecast in the <code>autoplot()</code> which is just an easy ggplot for forecasting, it looks to me that the forecast looks pretty good, but might be a bit optimistic for the average. But it’s hard to tell. We could get a lot of snow in the end of February or March. It gives us a good range to work with and use in our predictions.</p>
+<p>To use in our prediction we need a max, min and average value for the max snowpack.</p>
+<pre><code class="language-r">pred_sn_pk&lt;-fit%&gt;%
+  forecast(h = &quot;6 months&quot;)%&gt;%
+  filter(avg_sn_eq == max(avg_sn_eq))%&gt;%
+  mutate(ci_90 = hilo(.distribution, 90))%&gt;%
+  mutate(pred_lower = ci_90$.lower, pred_upper = ci_90$.upper)%&gt;%
+  as_tibble()%&gt;%
+  rename(pred_avg_sn_eq = avg_sn_eq)%&gt;%
+  select(Date, pred_avg_sn_eq, pred_lower, pred_upper)%&gt;%
+  pivot_longer(-Date, names_to = &quot;estimated_eq&quot;, values_to = &quot;avg_snow_water_e&quot;)%&gt;%
+  mutate(year = year(Date))%&gt;%
+  select(-Date)
+
+pred_sn_pk
+</code></pre>
+<pre><code class="language-r">## # A tibble: 3 x 3
+##   estimated_eq   avg_snow_water_e  year
+##   &lt;chr&gt;                     &lt;dbl&gt; &lt;dbl&gt;
+## 1 pred_avg_sn_eq            12.6   2020
+## 2 pred_lower                 9.70  2020
+## 3 pred_upper                15.5   2020
+</code></pre>
+<ul>
+<li>Use our model to <code>forecast()</code> six months out.</li>
+<li><code>filter</code> out the <code>max</code> value for the average (this isn’t perfect but it will work for our purposes).</li>
+<li>Add a column with higher and lower values based on a 90% confidence interval using the <code>hilo</code> function.</li>
+<li>convert to a tibble.</li>
+<li>Select only the values we want.</li>
+<li><code>pivot_longer</code> so that we have a <code>year</code> column and a snow_water_equivalant column.</li>
+<li>Make a <code>year</code> column.</li>
+<li>drop the <code>Date</code> column.</li>
+</ul>
+<h2>Reservoir Volume</h2>
+<p>The next variable we need is reservoir volume. ### Get Daily McPhee Reservoir Volumes</p>
+<pre><code class="language-r">bor_data&lt;-grabBOR.data(site_id = &quot;MPHC2000&quot;,
+                       timescale = 'daily',
+                       DayBgn = '1985-01-01',
+                      DayEnd = Sys.Date())%&gt;%
+  as_tibble()%&gt;%
+  mutate(date = as.Date(Date),
+         res_volume = as.numeric(`Reservoir Storage Volume (ac_ft) Start of Day Values`))%&gt;%
+  select(date, res_volume)
+
+bor_data
+</code></pre>
+<pre><code class="language-r">## # A tibble: 12,826 x 2
+##    date       res_volume
+##    &lt;date&gt;          &lt;dbl&gt;
+##  1 1985-01-01      44997
+##  2 1985-01-02      45079
+##  3 1985-01-03      45161
+##  4 1985-01-04      45189
+##  5 1985-01-05      45207
+##  6 1985-01-06      45262
+##  7 1985-01-07      45372
+##  8 1985-01-08      45463
+##  9 1985-01-09      45601
+## 10 1985-01-10      45721
+## # … with 12,816 more rows
+</code></pre>
+<p>We use the <code>{RNRCS}</code> package again to get Bureau of Reclemation (BOR - the agency that managed the McPhee dam)data.</p>
+<ul>
+<li>The <code>{RNRCS}</code> package has a function to grab Bureau of Reclemation data <code>grabBOR.data()</code>. It works much the same way as the <code>grapNRCS.data()</code> function that we wrapped our own function around above. However this time, we only needed one site so I just looked it up and put it in instead of using a meta function to get sites like we did with the snotel data.</li>
+<li>We convert the data to a tibble (df) convert the date to date format and convert the volume into numeric.</li>
+<li>We then subset the columns to just date and reservoir volume.</li>
+</ul>
+<h3>Summarize data to yearly</h3>
+<pre><code class="language-r">res_vol&lt;-bor_data%&gt;%
+  filter(month(date) %in% c(01, 02))%&gt;%
+  group_by(year(date))%&gt;%
+  summarize(min_vol = min(res_volume, na.rm = T))%&gt;%
+  ungroup()%&gt;%
+  rename(year = 1)%&gt;%
+  filter(year&gt;1986)
+
+res_vol
+</code></pre>
+<pre><code class="language-r">## # A tibble: 34 x 2
+##     year min_vol
+##    &lt;dbl&gt;   &lt;dbl&gt;
+##  1  1987  293309
+##  2  1988  324234
+##  3  1989  319239
+##  4  1990  274597
+##  5  1991  241536
+##  6  1992  297471
+##  7  1993  304632
+##  8  1994  310609
+##  9  1995  268308
+## 10  1996  312568
+## # … with 24 more rows
+</code></pre>
+<p>Here we subset the data to just the winter months and then summarize by year by getting the minimum value for all three months (I originally averaged the months, but getting the min gives a better prediction).</p>
+<ul>
+<li>First we filter January and February to get that years lowest reservoir values prior to runoff.</li>
+<li>We then <code>group_by()</code> year and then get the minimul volume from each of the two months.</li>
+<li>then we rename the first column to year instead of <code>year(date)</code> and filter out all years before 1987.</li>
+</ul>
+<h1>Building the Model</h1>
+<h3>Combining the variables and the datasets.</h3>
+<pre><code class="language-r">var_df&lt;-predicted_variable%&gt;%
+  full_join(avg_snwater_eq)%&gt;%
+  full_join(res_vol)%&gt;%
+  arrange(year)%&gt;%
+  mutate(raftable_releases = ifelse(is.na(raftable_releases), 0, raftable_releases))
+
+var_df_train&lt;-var_df%&gt;%
+  filter(year!=2020)
+
+var_df_test&lt;-var_df%&gt;%
+  filter(year==2020)
+
+var_df_train
+</code></pre>
+<pre><code class="language-r">## # A tibble: 33 x 4
+##     year raftable_releases avg_snow_water_e min_vol
+##    &lt;dbl&gt;             &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt;
+##  1  1987                87            20.1   293309
+##  2  1988                13            11.4   324234
+##  3  1989                17            16.3   319239
+##  4  1990                 0             9.28  274597
+##  5  1991                 9            16.5   241536
+##  6  1992                61            15.5   297471
+##  7  1993                99            25.4   304632
+##  8  1994                35            12.3   310609
+##  9  1995                89            21.8   268308
+## 10  1996                 0            13.6   312568
+## # … with 23 more rows
+</code></pre>
+<ul>
+<li>To join the datasets we use a full join because not every year has a raftable release and therefore has some year missing. Both of the other datasets have data for each year and a full join fills any missing variables with NA but keeps all observations.</li>
+<li>The years with NA values for raftable release should be 0, because those are the years without a raftable release and we want to th model to predict when those years are as well.</li>
+<li>Lastly we make two datasets one to train the model, which includes all years except this year 2020, and test model this year.</li>
+</ul>
+<p><strong>Note:</strong> <em>typically you want to split the data into training and testing datasets so you can train your model with the training dataset and then evaluate it with the testing dataset that it hasn’t seen. But here we don’t really care that much because this is just fun and we can predict this upcoming release and see if it is right.</em></p>
+<h3>Random Forest Using <code>caret</code></h3>
+<pre><code class="language-r">library(caret)
+set.seed(1234)
+
+control &lt;- trainControl(method=&quot;cv&quot;, number=10)
+
+rf_model &lt;- train(raftable_releases~avg_snow_water_e+min_vol,
+                    data=var_df_train,
+                    method=&quot;rf&quot;,
+                    tuneLength=3,
+                    trControl=control)
+</code></pre>
+<pre><code class="language-r">## note: only 1 unique complexity parameters in default grid. Truncating the grid to 1 .
+</code></pre>
+<pre><code class="language-r">rf_model
+</code></pre>
+<pre><code class="language-r">## Random Forest
+##
+## 33 samples
+##  2 predictor
+##
+## No pre-processing
+## Resampling: Cross-Validated (10 fold)
+## Summary of sample sizes: 29, 31, 29, 29, 29, 30, ...
+## Resampling results:
+##
+##   RMSE      Rsquared   MAE     
+##   15.69357  0.6885501  13.05262
+##
+## Tuning parameter 'mtry' was held constant at a value of 2
+</code></pre>
+<p>Here we build a cross validated random forest regression model to go predict number of raftable days.</p>
+<ul>
+<li><code>meothod = &quot;repeatedcv&quot;</code> is repeated cross validation where we do 10 cross validations 3 times with a random search.</li>
+<li>We use the <code>train()</code> functio from caret to fit the model using both predictive variables <code>avg_snow_water_e</code> and <code>min_vol</code>.</li>
+<li>We use Random Forest algorythm <code>&quot;rf&quot;</code> with 2000 trees.</li>
+<li>we try 3 mtry depths (thgere are only two because we have only two variables, but tuneLength of two was not tuning at all for some reason).</li>
+</ul>
+<h3>Evaluating the model</h3>
+<p>WARNING: this is not how you should evaluate a model typically like I said above.</p>
+<pre><code class="language-r">var_df_train%&gt;%
+  mutate(prediction = stats::predict(rf_model, .))%&gt;%
+  ggplot(aes(raftable_releases, prediction))+
+  geom_point(color = &quot;#1AB8FF&quot;, size =4, alpha = 0.6)+
+  geom_text(aes(label=year),hjust=-0.3, vjust=-0.3, color = &quot;#FFFFFF&quot;)+
+  labs(title = &quot;Random Forest: Predicted vs Actual Raftable Release Days&quot;,
+       x = &quot;Actual Release Days&quot;,
+       y = &quot;Predicted Release Days&quot;,
+       subtitle = &quot;Sudo-testing accuracy of RF model&quot;)
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-24-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-24-1.jpeg" alt="Predicted vs Actual Raftable Release Days"></a></figure>
+<p>Pretty good. Again, I keep saying this becuase it is really important, we would want to make sure that the model works in out of training sample, but with this dataset, we don’t have enough data to do that.</p>
+<h2>So what about this year</h2>
+<pre><code class="language-r">var_df_test%&gt;%
+  mutate(prediction = predict(rf_model, .))
+</code></pre>
+<pre><code class="language-r">## # A tibble: 1 x 5
+##    year raftable_releases avg_snow_water_e min_vol prediction
+##   &lt;dbl&gt;             &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+## 1  2020                 0             10.4  287807       4.71
+</code></pre>
+<p>So far the model predicts we will have 4.7078333 days of raftable flows. I’d say that is within the margin of error of 0 days looking at past predictions. But what if we get more snow? Given that it is February and Peak snow is typically around mid March would be a good assumption.</p>
+<p>Let’s add the snotel forcast from the ARIMA model above to the predicted dataset.</p>
+<pre><code class="language-r">pred_sn_pk_1&lt;-pred_sn_pk%&gt;%
+  mutate(min_vol = var_df%&gt;%
+           filter(year == 2020)%&gt;%
+           pull(min_vol))
+
+test_data&lt;-var_df%&gt;%
+  filter(year==2020)%&gt;%
+  select(-raftable_releases)%&gt;%
+  mutate(estimated_eq = &quot;current&quot;)%&gt;%
+  bind_rows(pred_sn_pk_1)
+
+test_data
+</code></pre>
+<pre><code class="language-r">## # A tibble: 4 x 4
+##    year avg_snow_water_e min_vol estimated_eq  
+##   &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;         
+## 1  2020            10.4   287807 current       
+## 2  2020            12.6   287807 pred_avg_sn_eq
+## 3  2020             9.70  287807 pred_lower    
+## 4  2020            15.5   287807 pred_upper
+</code></pre>
+<p>Now let’s use the prediction for <code>current</code>, <code>pred_avg_sn_eq</code>, <code>pred_lower</code>, and <code>pred_upper</code></p>
+<pre><code class="language-r">test_data%&gt;%
+  mutate(prediction = stats::predict(rf_model, .))
+</code></pre>
+<pre><code class="language-r">## # A tibble: 4 x 5
+##    year avg_snow_water_e min_vol estimated_eq   prediction
+##   &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;
+## 1  2020            10.4   287807 current              4.71
+## 2  2020            12.6   287807 pred_avg_sn_eq       6.60
+## 3  2020             9.70  287807 pred_lower           3.09
+## 4  2020            15.5   287807 pred_upper          23.0
+</code></pre>
+<p>That looks pretty good.</p>
+<ul>
+<li>Current Prediction is 4.71 days.</li>
+<li>Predicted is 6.6 at the average forecast snowdepth.</li>
+<li>3.09 is the low end. And 23 days if we get dumped on from now until April 1.</li>
+</ul>
+<p>Let’s try something a bit simpler, like a linear model.</p>
+<pre><code class="language-r">model_lm&lt;-glm(raftable_releases~avg_snow_water_e+min_vol, family = &quot;poisson&quot;, data = var_df_train)
+
+##saveRDS(model_lm, &quot;output/models/lm_model.rds&quot;)
+
+summary(model_lm)
+</code></pre>
+<pre><code class="language-r">##
+## Call:
+## glm(formula = raftable_releases ~ avg_snow_water_e + min_vol,
+##     family = &quot;poisson&quot;, data = var_df_train)
+##
+## Deviance Residuals:
+##    Min      1Q  Median      3Q     Max  
+## -6.033  -3.211  -2.308   1.997   6.488  
+##
+## Coefficients:
+##                       Estimate    Std. Error z value             Pr(&gt;|z|)
+## (Intercept)      -2.0553926585  0.2693758160   -7.63   0.0000000000000234
+## avg_snow_water_e  0.1900049675  0.0072692190   26.14 &lt; 0.0000000000000002
+## min_vol           0.0000076058  0.0000008358    9.10 &lt; 0.0000000000000002
+##                     
+## (Intercept)      ***
+## avg_snow_water_e ***
+## min_vol          ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##
+## (Dispersion parameter for poisson family taken to be 1)
+##
+##     Null deviance: 1292.88  on 32  degrees of freedom
+## Residual deviance:  446.98  on 30  degrees of freedom
+## AIC: 563.07
+##
+## Number of Fisher Scoring iterations: 6
+</code></pre>
+<p>This model looks pretty good.</p>
+<pre><code class="language-r">model_lm%&gt;%
+  augment(data = var_df_train, type.predict = &quot;response&quot;)%&gt;%
+  ggplot(aes(raftable_releases, .fitted))+
+  geom_point(color = &quot;#1AB8FF&quot;, size =4, alpha = 0.6)+
+  geom_text(aes(label=year),hjust=-0.3, vjust=-0.3, color = &quot;#FFFFFF&quot;)+
+  labs(title = &quot;Linear Model: Predicted vs Actual Raftable Release Days&quot;,
+       subtitle = &quot;Actual Values vs. Predicted Values&quot;,
+       y = &quot;Predicted Values&quot;,
+       x = &quot;Actual Raftable Release Days&quot;)
+</code></pre>
+<figure><a href="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-29-1.jpeg"><img src="/img/r/assets/dolores_predict/figure-gfm/unnamed-chunk-29-1.jpeg" alt="Linear Model: Predicted vs Actual Raftable Release Days"></a></figure>
+<pre><code class="language-r">model_lm%&gt;%
+  augment(newdata = test_data, type.predict = &quot;response&quot;)
+</code></pre>
+<pre><code class="language-r">## # A tibble: 4 x 6
+##    year avg_snow_water_e min_vol estimated_eq   .fitted .se.fit
+##   &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt;
+## 1  2020            10.4   287807 current           8.25   0.620
+## 2  2020            12.6   287807 pred_avg_sn_eq   12.5    0.767
+## 3  2020             9.70  287807 pred_lower        7.21   0.575
+## 4  2020            15.5   287807 pred_upper       21.6    0.986
+</code></pre>
+<p>That looks more rational than the random forest model. The results:</p>
+<ul>
+<li>Current snowpack = 8.25 days</li>
+<li>predicted peak snowpack = 12.5 days.</li>
+<li>predicted lower snowpack = 7.21 (this really isn’t rational considering current is already greater than it).</li>
+<li>predicted upper snowpack = 21.6 days (let it snow let it snow).</li>
+</ul>
+<p>I’ll continue to run this as the winter progresses. We now have a model that we can push into production to predict future data sets.</p>
+
+</article>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/r/2020-02-09-dolores-predict/ -->
+  </body>
+</html>
