@@ -23,3 +23,17 @@
     content: "";
   }
 }
+//This is in the tags-list.njk page. 
+.tags-list-all {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  li {
+    margin: 10px 30px 10px 0;
+  }
+  a{
+    display:block;
+    padding: 10px 15px;
+  }
+}

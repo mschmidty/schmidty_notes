@@ -1,0 +1,24 @@
+---
+layout: page
+title: All posts
+subtitle: The kitchen sink.
+pagination:
+  data: collections.posts
+  size: 6
+  alias: posts
+  reverse: true
+---
+
+<section class="content-wrapper blog-index content-center text-wrapper">
+  {% set postslist = posts %}
+  {% include "postslist.njk" %}
+  <nav aria-labelledby="my-pagination" class="pagination-nav">
+    <ol>
+      <li>{% if pagination.href.previous %}<a href="{{ pagination.href.previous }}"><- Newer</a>{% else %}{% endif %}</li>
+  {%- for pageEntry in pagination.pages %}
+      <li><a href="{{ pagination.hrefs[ loop.index0 ] }}"{% if page.url == pagination.hrefs[ loop.index0 ] %} aria-current="page" class="current-page"{% endif %}>{{ loop.index }}</a></li>
+  {%- endfor %}
+      <li>{% if pagination.href.next %}<a href="{{ pagination.href.next }}">Older -> </a>{% else %}{% endif %}</li>
+    </ol>
+  </nav>
+</section>

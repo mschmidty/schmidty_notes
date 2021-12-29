@@ -1,6 +1,9 @@
 ---
 title: "Schmidty Notes | My work, notes, musings and more."
 layout: layouts/base.njk
+eleventyNavigation:
+  key: Home
+  order: 1
 ---
 <header class="home-banner content-wrapper">
   <div class="site-entry-text">
@@ -8,69 +11,34 @@ layout: layouts/base.njk
     <h1 class="banner-title">Schmidty <br>Notes</h1>
     <sub class="sub-below">My work, notes, musings and more.  Some serious, some not.</sub>
   </div>
-  <ul class="social">
-    <li><a href="https://twitter.com/@mschmidty">@mikejschmidty <img src="svg/twitter-icon.svg" alt="twitter icon"></a></li>
-    <li><a href="https://github.com/mschmidty">@mschmidty<img src="svg/github-icon.svg" alt="github icon"></a></li>
-    <li><a href="https://codepen.io/mschmidty">@mschmidty<img src="svg/code-pen.svg" alt="code pen icon"></a></li>
-  </ul>
+  {% include "social.njk" %}
 </header>
 <main>
-  <section class="content-wrapper blog-index">
+  <section class="content-wrapper blog-index two-one">
     <h2 class="blog-index-header">Latest Posts</h2>
-    <ol class="blog-index-roll">
-      {%- for post in collections.posts | reverse -%}
-      {%- if loop.index0 < 7  -%}
-      <li class="blog-item">
-        <span class="blog-item-text">
-          <time datetime="{{ post.data.date | htmlDateString }}" class="blog-item-time">{{ post.data.date | readableDate }}</time>
-          <a href="{{ post.url | url }}" class="blog-item-title"><h3><span>&#128279;</span>{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</h3></a>
-          {% excerpt post %}
-        </span>
-        <ul class="blog-index-tags">
-        {% for tag in post.data.tags | filterTagList%}
-          {% set tagUrl %}/tags/{{ tag | slug }}/{% endset %}
-          <li><a href="{{ tagUrl | url }}" class="blog-index-tag">{{ tag }}</a></li>
-        {% endfor %}
-        </ul>
-      </li>
-      {%- endif -%}
-      {%- endfor -%}
-    </ol>
-    {# <div class="blog-index-roll">
-      <section class="blog-item">
-        <a href="#" class="blog-item-link">
-          <time class="blog-item-time">November 30, 2019</time>
-          <h3 class="blog-item-title"> <span>&#128279;</span>  VS Code: Add a Rmarkdown Code Chunk Snippet Key Binding</h3>
-          <p class="blog-item-body">I recently started using VS code for R development. There is an awesome newish R extension for VS Code. It takes a little setup, it works best with the addition of radian, a python package, but it works really well. There are solid instructions on the extension page. I love Rstudio for the most part, but I got frusterated by the lack of editor customization (mostly line height). So here we are.</p>
-        </a>
-        <ul class="blog-index-tags">
-          <li><a href="#" class="blog-index-tag">VS Code</a></li>
-          <li><a href="#" class="blog-index-tag">Rmarkdown</a></li>
-          <li><a href="#" class="blog-index-tag">R</a></li>
-        </ul>
-      </section>
-      <section class="blog-item">
-        <a href="#" class="blog-item-link">
-          <time class="blog-item-time">November 30, 2019</time>
-          <h3 class="blog-item-title"><span>&#128279;</span>Colorado: Hex Plots, APIs, and D3js</h3>
-          <p>After my last blogpost I was a little frustrated at how poorly the title text resized using ggplot and ggsave. It was a minor issue to be honest, but I figured I could learn something new by exporting the data as geojson and plotting it using D3 js. So here it goes.</p>
-        <a>
-        <ul class="blog-index-tags">
-          <li><a href="#" class="blog-index-tag">VS Code</a></li>
-          <li><a href="#" class="blog-index-tag">Rmarkdown</a></li>
-        </ul>
-      </section>
-      <section class="blog-item">
-        <a href="#" class="blog-item-link">
-          <time class="blog-item-time">December 21, 2021</time>
-          <h3 class="blog-item-title"><span>&#128279;</span>VS Code: Add a Rmarkdown Code Chunk Snippet Key Binding</h3>
-          <p>I recently started using VS code for R development. There is an awesome newish R extension for VS Code. It takes a little setup, it works best with the addition of radian, a python package, but it works really well. There are solid instructions on the extension page. I love Rstudio for the most part, but I got frusterated by the lack of editor customization (mostly line height). So here we are.</p>
-        <a>
-        <ul class="blog-index-tags">
-          <li><a href="#" class="blog-index-tag">VS Code</a></li>
-          <li><a href="#" class="blog-index-tag">Rmarkdown</a></li>
-        </ul>
-      </section>
-    </div> #}
+    <div class="blog-index">
+      <ol class="blog-index-roll">
+        {%- for post in collections.posts | reverse -%}
+        {%- if loop.index0 < 7  -%}
+        <li class="blog-item">
+          <span class="blog-item-text">
+            <time datetime="{{ post.data.date | htmlDateString }}" class="blog-item-time">{{ post.data.date | readableDate }}</time>
+            <a href="{{ post.url | url }}" class="blog-item-title"><h3><span>&#128279;</span>{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</h3></a>
+            {% excerpt post %}
+          </span>
+          <ul class="blog-index-tags">
+          {% for tag in post.data.tags | filterTagList%}
+            {% set tagUrl %}/tags/{{ tag | slug }}/{% endset %}
+            <li><a href="{{ tagUrl | url }}" class="blog-index-tag">{{ tag }}</a></li>
+          {% endfor %}
+          </ul>
+        </li>
+        {%- endif -%}
+        {%- endfor -%}
+      </ol>
+      <a href="post-index/1" class="link-to">Older Posts</a>
+    </div>
+    
   </section>
+  
 </main>

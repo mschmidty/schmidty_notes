@@ -1,15 +1,8 @@
-@mixin content-wrap {
-  position: relative;
-  width: 100%; 
-  max-width: 700px; 
-  margin-right: auto;
-  margin-left: auto;
-}
 .post-content {
   width: 97%;
   margin: 0 auto;
   position: relative;
-  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span{
+  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote {
     position: relative;
     width: 100%; 
     max-width: 700px; 
@@ -22,6 +15,14 @@
   }
   img{
     width: 100%;
+  }
+  .portrait-image-js-added{
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
   }
   .post-header{
     margin-bottom: 4rem;
@@ -55,3 +56,6 @@
   }
 }
 
+.post-content li {
+  line-height: 1.8;
+}

@@ -1,0 +1,79 @@
+pre{
+  border-radius:0;
+  border:none;
+  display: block;
+  code{
+    background-color:inherit;
+  }
+  
+}
+
+.post-content pre[class*=language-]{
+  display:block;
+  position:relative;
+  max-width: 700px;
+  width: 100%;
+  margin: 2rem auto;
+  border-radius: 5px;
+  padding: 3rem 2rem;
+  code{
+    font-family: $code-text;
+    line-height: 2;
+  }
+  &:before{
+    content: " ";
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background:$light-red;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+  }
+  &:after{
+    content: " ";
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background:$yellow ;
+    position:absolute;
+    top: 15px;
+    left: 34px;
+  }
+  >code{
+    &:before{
+      content: " ";
+      height: 12px;
+      width: 12px;
+      border-radius: 50%;
+      background:#43D746;
+      position:absolute;
+      top: 15px;
+      left: 54px;
+    }
+  }
+
+}
+.highlighter-rouge pre.highlight, pre.language-r-output {
+  padding:3rem 0 3rem 2rem;
+  font-size: 0.9rem !important;
+  line-height:1.4 !important;
+  margin-bottom: 40px;
+  code{
+    line-height:1.8;
+    font-weight:200;
+  }
+}
+.highlighter-rouge .highlight{
+  border-radius: 5px;
+  margin: 0;
+}
+code.highlighter-rouge, code.language-plaintext{
+  background-color: #efefef !important;
+  border: none;
+  color: $light-red !important;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+  font-size: 1rem !important;
+  padding:0 !important;
+  
+}

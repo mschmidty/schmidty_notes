@@ -1,0 +1,46 @@
+.link-to{
+  display:inline-block;
+  font-family: $deco-text;
+  text-decoration: none;
+  border: 2px solid $link;
+  padding: 4px 6px;
+  border-radius: 5px;
+  margin-top: 25px;
+  &:after{
+    content:"->";
+    font-size: 1.4rem;
+    line-height: 1;
+    position: relative;
+    top: 2px;
+    left: 2px;
+  }
+  &:hover{
+    background: $link;
+    color: $white;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    font-weight: bold;
+  }
+}
+.pagination-nav {
+  font-family: $deco-text;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  ol {
+    list-style-type: none; 
+    display: inline-block;
+    text-align: center;
+    display: flex;
+    padding-left: 0;
+  }
+  li {
+    margin: 0 10px;
+  }
+  .current-page {
+    color: $black;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+}

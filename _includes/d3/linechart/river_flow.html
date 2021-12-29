@@ -1,0 +1,126 @@
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<style>
+.tick line{
+  visibility:hidden;
+}
+.x-axis g:first-of-type{
+  visibility:hidden;
+}
+.y-axis g:first-of-type{
+  visibility:hidden;
+}
+.container{
+  background:#efefef;
+  position:relative;
+  margin-bottom: 25px;
+}
+.container svg{
+  font-size:12px;
+  font-weight:300;
+  color:#666666;
+
+}
+.chart-text{
+  position: absolute;
+  width: 100%;
+  margin-top:40px;
+}
+.chart-text p, .chart-text h2{
+  position:relative;
+  width: 100%;
+  text-align:center;
+
+}
+.chart-text p:first-of-type{
+  font-size:50px;
+  color:rgba(255, 87, 34, 0.6);
+  margin-bottom:0;
+}
+.chart-text p:first-of-type span{
+  color:#777777;
+  font-size:18px;
+}
+.chart-text h2{
+  margin-top:0;
+  line-height:0.8;
+  margin-bottom:10px;
+}
+.chart-text p:last-of-type{
+  color:#777777;
+  font-size:20px;
+}
+</style>
+
+<div class="container">
+  <div class="chart-text">
+    <p>900<span>cfs</span></p>
+    <h2>Dolores River</h2>
+    <p>At Dolores, CO</p>
+  </div>
+  <div id="my_dataviz" class="vis"></div>
+
+</div>
+
+<script>
+flowChart();
+async function flowChart(){
+  let waterUrl = "https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=09166500&startDT=2020-04-27&endDT=2020-05-03&parameterCd=00060&siteStatus=all"
+
+  let timeFormat = d3.timeFormat("%m-%d-%Y %H");
+  //Call the api
+  const response = await fetch(waterUrl);
+  const jsonData = await response.json();
+  console.log(jsonData)
+
+  //Parse the data returned from api
+  let sites = jsonData.value.timeSeries[0];
+  let riverName = sites.sourceInfo.siteName.toLowerCase().split(/ at | near /);
+  let flowData = sites.values[0].value.map(({dateTime, value})=>({date:new Date(dateTime), value:parseFloat(value)}));
+
+  //build chart
+
+  // set the dimensions and margins of the graph
+  let margin = {top: 10, right: 30, bottom: 30, left: 50},
+    width = 600,
+    height = 400;
+
+  // append the svg object to the body of the page
+  let svg = d3.select("#my_dataviz")
+    .append("svg")
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "0 0 " +width + " " + height)
+
+  let x = d3.scaleTime()
+    .domain(d3.extent(flowData, function(d){return d.date}))
+    .range([0,width]);
+  svg.append("g")
+    .attr("transform", "translate(0,"+(height-margin.bottom)+")")
+    .attr("stroke-width", "0")
+    .attr("class", "x-axis")
+    .call(d3.axisBottom(x)
+         .ticks(d3.timeDay.every(1)));
+
+  let y = d3.scaleLinear()
+    .domain([0, (d3.max(flowData, function(d) { return +d.value; })*1.2)])
+    .range([height, 0]);
+  svg.append("g")
+    .attr("transform", "translate(40, 0)")
+    .attr("stroke-width", "0")
+    .attr("class", "y-axis")
+    .call(d3.axisLeft(y)
+            .ticks(5))
+
+  svg.append("path")
+    .datum(flowData)
+    .attr("fill", "#FF5722")
+    .attr("stroke", 'none')
+    .attr("opacity", "0.45")
+    .attr('d', d3.area()
+            .x(function(d){return x(d.date)})
+            .y0(y(0))
+            .y1(function(d){return y(d.value)})
+         )
+}
+
+</script>

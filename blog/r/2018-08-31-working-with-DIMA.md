@@ -15,7 +15,7 @@ Some useful techniques that are used in it are:
 ## Load libraries
 
 you must have devtools installed to get dima.tools from [here](https://github.com/nstauffer/dima.tools).  
-```{r}
+```r
 ##Load Libraries - May need to intall these with install.packages() before loading.
 library(RODBC) ## - for reading Access Databases
 library(tidyverse)
@@ -28,13 +28,13 @@ library(ggthemes)
 ## Load the DIMA database.
 You can either use read.dima, as I do here. Or you can use the RODBC package like so `odbcDriverConnect("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=database/8_30.mdb")`.  **Note that you must be using 32 bit version of R to connect to an Access Database (either method).** to change your r version, go to `Tools>Global Options` and under the `General` tab, select `change` under the "R version" section.
 
-```{r}
+```r
 dima<-read.dima("database", all.tables = T)
 ```
 
 
 ## find the species richness table.
-```{r}
+```r
 species_rich_details<-dima$tblSpecRichDetail
 species_rich_details
 ```
@@ -43,7 +43,7 @@ species_rich_details
 ## Subset the species list
 We have a lot of blank rows, to eliminate those I added the `filter()` function to eliminate all of the rows with no plants. Separate rows is used to parse through all of the plant codes.
 
-```{r}
+```r
 all_species<-species_rich_details %>%
   filter(SpeciesCount>0)%>%
   select(SpeciesList)%>%
@@ -77,7 +77,7 @@ Into this:
 
 ## Count each occurrent with `table()`
 This counts each occurrence of each plant and displays it in a table;
-```{r}
+```r
 count<-as.data.frame(table(all_species$SpeciesList))
 final_list<-count%>%
   rename(symbol=1, count=2)
@@ -90,14 +90,14 @@ final_list
 
 ### Read the Plant List.
 I got this plant list at the [USDA Plants Database](https://plants.sc.egov.usda.gov/dl_state.html).
-```{r}
+```r
 plant_list<-read_csv("COplants5312018.txt")
 plant_list
 ```
 
 ### Clean and Merge
 The plant list sometimes has more than one entry for each plant.  For example ACHY has 3 entries.  When you merge it will match all three of those entries, but we only want one of the entries, so we select just the first of each plant instance with `match(unique())`.
-```{r}
+```r
 plant_list_cl<- plant_list%>%
   rename(symbol=1, sci_name=3)
 plant_list_cl<-plant_list_cl[match(unique(plant_list_cl$symbol), plant_list_cl$symbol),]
@@ -105,7 +105,7 @@ plant_list_cl
 ```
 
 ### Join the tables
-```{r}
+```r
 final_merged_list<-final_list %>%
   left_join(plant_list_cl)%>%
   rename(num_occur=count, common_name=5)%>%
@@ -126,7 +126,7 @@ The final output should look something like this:
 
 ## Write the File
 
-```{r}
+```r
 write_csv(final_merged_list, "output/species_richness_plant_list_8312018.csv")
 
 ```
@@ -134,7 +134,7 @@ write_csv(final_merged_list, "output/species_richness_plant_list_8312018.csv")
 
 ## Plot
 ### get rid of unknowns
-```{r}
+```r
 for_plot_cl<-final_merged_list%>%
   filter(!str_detect(symbol, "AF"), !str_detect(symbol,"AG01"), !str_detect(symbol,"PF"), !str_detect(symbol, "PG"), !str_detect(symbol, "SH"), !str_detect(symbol,"SU"))%>%
   arrange(desc(symbol))
@@ -142,7 +142,7 @@ for_plot_cl
 ```
 
 ### Plot the result and save a copy.
-```{r}
+```r
 ggplot(for_plot_cl, aes(reorder(symbol, num_occur), num_occur))+
   coord_flip()+
   theme_minimal()+

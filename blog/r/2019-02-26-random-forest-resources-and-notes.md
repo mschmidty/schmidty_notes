@@ -2,7 +2,7 @@
 layout: post
 title: "Random Forest Resources and Notes"
 date: 2019-02-26
-tags: [ machine learning, R ]
+tags: [ Machine Learning, R ]
 ---
 
 Resources to understand and run random forests in r.

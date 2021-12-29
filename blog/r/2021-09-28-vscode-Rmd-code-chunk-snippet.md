@@ -20,7 +20,7 @@ Go to `Code>Preferences>Keyboard Shortcuts` and then in the upper right hand cor
     "key": "cmd+alt+i",
     "command": "editor.action.insertSnippet",
     "when": "editorTextFocus",
-    "args": {"snippet": "```{r}\n$0\n```"}
+    "args": {"snippet": "```r\n$0\n```"}
   },
 ]
 ```

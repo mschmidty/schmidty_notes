@@ -1,0 +1,17 @@
+---
+permalink: /tags/
+layout: page
+title: Tags
+subtitle:  A few things I've written about.
+eleventyNavigation:
+  key: Subjects
+  order: 2
+---
+<section class="text-wrapper">
+  <ol class="tags-list-all">
+  {% for tag in collections.tagList %}
+    {% set tagUrl %}/tags/{{ tag | slug }}/{% endset %}
+    <li><a class="link-to" href="{{ tagUrl | url }}" class="post-tag">{{ tag }}</a></li>
+  {% endfor %}
+  </ol>
+</section>

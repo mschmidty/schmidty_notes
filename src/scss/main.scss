@@ -1,10 +1,32 @@
 //Import base
-@import 'base/color', 'base/text';
-//Import components
-@import 'components/page', 'components/blog-index', 'components/post', 'components/tag-list';
+@import 
+  'base/normalize',
+  'base/reset',
+  'base/color', 
+  'base/text', 
+  'base/prism';
+
+//Add-ins
+@import 'add-ins/mixins';
 //Import template files
-@import 'templates/home';
+@import 
+'templates/page',
+'templates/post',
+'templates/home';
+
+//Import components
+@import
+  'components/layouts',
+  'components/blog-index', 
+  'components/tag-list',
+  'components/code-blocks',
+  'components/header',
+  'components/footer',
+  'components/misc';
 
 body {
   background: $white;
+  margin: 0;
 }
+
+

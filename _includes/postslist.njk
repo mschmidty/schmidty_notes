@@ -1,0 +1,17 @@
+<ol class="blog-index-roll" style="counter-reset: start-from {{ (postslistCounter or postslist.length) + 1 }}">
+  {% for post in postslist | sortPosts %}
+  <li class="blog-item">
+    <span class="blog-item-text">
+      <time datetime="{{ post.data.date | htmlDateString }}" class="blog-item-time">{{ post.data.date | readableDate }}</time>
+      <a href="{{ post.url | url }}" class="blog-item-title"><h3><span>&#128279;</span>{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</h3></a>
+      {% excerpt post %}
+    </span>
+    <ul class="blog-index-tags">
+    {% for tag in post.data.tags | filterTagList%}
+      {% set tagUrl %}/tags/{{ tag | slug }}/{% endset %}
+      <li><a href="{{ tagUrl | url }}" class="blog-index-tag">{{ tag }}</a></li>
+    {% endfor %}
+    </ul>
+  </li>
+  {% endfor %}
+</ol>

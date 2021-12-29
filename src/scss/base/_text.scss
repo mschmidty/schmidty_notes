@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Fira+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Merriweather:wght@300;400;500;700&display=swap');
 
+
 $body-text: "Merriweather", Georgia, Serif;
 $header-text: "Fira Sans", Sans-Serif;
 $deco-text: "Fira Code", monospace;
+$code-text: "Fira Code", monospace;
 $body-text-italic: "Merriweather Italic";
 
 body{
@@ -14,10 +16,20 @@ h1,h2,h3,h4,h5,h6{
   font-weight: 700;
 }
 
+h1{
+  font-size: 2.5rem;
+}
+
+h2{
+  font-size: 2rem;
+  margin: 1.3rem 0 0.5rem 0;
+  text-decoration: underline;
+}
+
 h3 {
   font-family: $header-text;
   font-weight: 500;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   line-height: 1.4;
   margin-bottom: 0.6rem;
 }
@@ -27,8 +39,36 @@ p{
   font-size: 1.05rem;
   line-height: 1.8;
   font-weight: 300;
+  margin-bottom: 1.2rem;
 }
 
 a{
   color: $link;
+  &:hover {
+    cursor: pointer;
+    color: $link-active;
+  }
+}
+
+ul, ol {
+  padding-left: 2rem;
+  margin-bottom: 1.2rem;
+}
+
+blockquote {
+  padding: 1.5rem 1.7rem 0.6rem 1.7rem;
+  margin-bottom: 1.2rem;
+  font-style: $body-text-italic;
+  font-style: italic;
+  border-left: 5px solid $brown;
+  background: $light-brown;
+  border-radius: 5px;
+  p {
+    font-size: 0.9rem;
+  }
+}
+code {
+  font-family: $code-text;
+  font-weight: bold;
+  color: $brown;
 }

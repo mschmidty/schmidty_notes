@@ -2,27 +2,27 @@
 layout: post
 title:  "Cultural Model R Scripts"
 date: 2018-08-01
-tags: jekyll update
+tags: [ predictive models, randomForest]
 ---
 
 The following are scripts that I used to make a cultural prediction model.  It uses topographic, hydrologic and biological GIS information to predict areas where arc sites likely occur on the landscape.
 
 ## Load Libraries
 
-```{r}
+```r
 library(tidyverse)
 library(randomForest)
 ```
 ## Read Data
 I made the dataset loaded here in another R file. The file loaded here was created using a 30m Digital Elevation Model.  The elevation model was used to calculate slope, aspect, flow direction, TPI, TRI, and roughness.  
-```{r}
+```r
 data<-readRDS("rData/master_datasets/master_07172018.rds")
 data
 ```
 
 ## Remove NAs
 It may be more appropriate to impute NAs vs remove them completely, but there are very few NAs only at the spacial edge of the model.
-```{r}
+```r
 data_cl<- data%>% filter(!is.na(Slope)| !is.na(Aspect))%>%
   filter(!is.na(TPI)| !is.na(TRI))##%>%
 ```
@@ -31,7 +31,7 @@ data_cl<- data%>% filter(!is.na(Slope)| !is.na(Aspect))%>%
 ## Convert character to factors
 Random Forests can't handle characters so here we convert the characters to factors.
 
-```{r}
+```r
 data_cl$BPS_NAME<-as.factor(data_cl$BPS_NAME)
 data_cl$GROUPVEG<-as.factor(data_cl$GROUPVEG)
 data_cl$GROUPNAME<-as.factor(data_cl$GROUPNAME)
@@ -39,7 +39,7 @@ data_cl$GROUPNAME<-as.factor(data_cl$GROUPNAME)
 
 ## Separate the dataset into surveyed and non surveyed datasets
 The surveyed sites sill be used to train the model because we know there outcome.  The non-surveyed sites will have the model be applied to them.
-```{r}
+```r
 surveyed<-filter(data_cl, Survey=="Yes")
 noSurvey<-filter(data_cl, Survey=="No")
 ```
@@ -52,14 +52,14 @@ The sites removed are:
 4 - NA
 5 - Proto
 6 - Historic
-```{r}
+```r
 surveyed$prehistoric_test<- ifelse(surveyed$RES_TYPE_Raster == 1| surveyed$RES_TYPE_Raster == 2, 1,2)
 surveyed$prehistoric_test[is.na(surveyed$prehistoric_test)]<-2
 ```
 
 ## Separate the dataset into train and test
 Separate the dataset randomly into 70:30 split.  The resulting train dataset will be used to make the model and the resulting test dataset will be used to test the model.
-```{r}
+```r
 train<-sample_frac(surveyed, 0.7)
 sid<-as.numeric(rownames(train))
 test<-surveyed[-sid,]
@@ -69,13 +69,13 @@ train
 
 
 ## Determine the number of sites vs non-sites`
-```{r}
+```r
 table(test$prehistoric_test)
 ```
 
 ## Run Random Forests
 The following runs the model and assigns the model to fit.
-```{r}
+```r
 set.seed(415)
 
 ptm<- proc.time()
@@ -95,7 +95,7 @@ importance(fit)
 
 ## Find the results
 The following applies the model `fit` to the `test` data and then determines how well it predicted both the candy sites and the non-cany sites.
-```{r}
+```r
 Prediction<-predict(fit, test)
 prediction_test<- transform(test, predict=Prediction)
 ##prediction_test
@@ -126,7 +126,7 @@ sum(prediction_test$success)/10639*100
 
 
 ## Predict the whole field office.
-```{r}
+```r
 final_predict<-predict(fit, data_cl)
 table(final_predict)
 data_cl_prediction<-transform(data_cl, predict=final_predict)
@@ -142,7 +142,7 @@ head(data_cl_prediction)
 
 ## Save points
 Save variables x, y and probability.  The x and y coordinates will be converted into a raster in Arc Map.
-```{r}
+```r
 export_data_cl<- dplyr::select(data_cl_prediction, x, y, predict:prob2 )
 write_csv(export_data_cl,"rData/predicted_pointsV2.csv")
 ```

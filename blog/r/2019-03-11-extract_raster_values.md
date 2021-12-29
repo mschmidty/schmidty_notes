@@ -100,7 +100,7 @@ extracted_st
 In reality though, I will rarely need to extract from a exten, rather, I will need to extract from a polygon or multiPolygon. First, let's try to extract based on a polygon.   
 
 First, create the polygon
-```{r}
+```r
 x_coord<-c(70, 20, -50, -20)
 y_coord<-c(50, 60, 20, -30)
 
@@ -113,7 +113,7 @@ sps <- SpatialPolygons(list(ps))
 
 
 Make sure there is overlap
-```{r}
+```r
 plot(r)
 plot(sps, add=T)
 ```
@@ -121,7 +121,7 @@ plot(sps, add=T)
 ![Polygon displayed over a raster](/img/r/assets/raster/polygon_extract_plot.jpeg)
 
 Now use the polygon to extract.
-```{r}
+```r
 extracted_poly<-extract(st, sps)
 extracted_poly
 ```
