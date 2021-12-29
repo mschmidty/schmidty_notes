@@ -9,19 +9,19 @@
     "watch:sass": "npx sass src/scss:_site/css --watch",
     "sass-build": "sass src/scss:_site/css",
     "start": "npm run watch:eleventy & npm run watch:sass",
-    "build": "npx @11ty/eleventy & npx sass src/scss:_site/css"
+    "eleventy-build": "npx @11ty/eleventy"
   },
   "author": "@mschmidty",
   "license": "ISC",
   "devDependencies": {
+  },
+  "dependencies": {
+    "eleventy-plugin-excerpt": "^1.1.2",
+    "sass": "^1.43.2",
     "@11ty/eleventy": "^0.12.1",
     "@11ty/eleventy-navigation": "^0.3.2",
     "@11ty/eleventy-plugin-syntaxhighlight": "^3.1.3",
     "markdown-it": "^12.2.0",
     "markdown-it-implicit-figures": "^0.10.0"
-  },
-  "dependencies": {
-    "eleventy-plugin-excerpt": "^1.1.2",
-    "sass": "^1.43.2"
   }
 }
