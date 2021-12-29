@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "watch:eleventy": "npx @11ty/eleventy --serve",
+    "eleventy": "npx @11ty/eleventy",
     "watch:sass": "npx sass src/scss:_site/css --watch",
-    "start": "npm run watch:eleventy & npm run watch:sass"
+    "sass": "npx sass src/scss:_site/css",
+    "start": "npm run watch:eleventy & npm run watch:sass",
+    "build": "npm run eleventy sass"
   },
   "author": "@mschmidty",
   "license": "ISC",
