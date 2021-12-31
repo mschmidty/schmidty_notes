@@ -1,3 +1,4 @@
+
 .blog-index-header {
   order:2;
   text-align: right;
@@ -5,15 +6,21 @@
   color: $grey;
   margin-top:1rem;
   font-size: 1.2rem;
+  @media all and(max-width: 800px){
+    order: 1;
+    text-align: left;
+  }
+}
+.blog-index{
+  order: 1;
+  @media all and(max-width: 800px){
+    order: 2;
+  }
 }
 ol.blog-index-roll {
-  order:1;
   list-style-type: none;
   padding-left: 0;
   margin-left:0;
-  @media(max-width: 800px){
-    padding-left: 20px;
-  }
 }
 
 .blog-item {
@@ -52,6 +59,9 @@ ol.blog-index-roll {
     position: absolute;
     margin-left: -30px;
     font-size: 1.4rem;
+    @media all and(max-width: 600px){
+      display:none;
+    }
   }
   &:hover{
     background: linear-gradient(45deg, #ee104f, #2242f8 );

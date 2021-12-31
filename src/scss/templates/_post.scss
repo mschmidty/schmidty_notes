@@ -2,7 +2,7 @@
   width: 97%;
   margin: 0 auto;
   position: relative;
-  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote {
+  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote, >table {
     position: relative;
     width: 100%; 
     max-width: 700px; 
@@ -42,8 +42,8 @@
     }
   }
   .post-title{
-    font-size: 5rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(3rem, -1.6471rem + 11.7647vw,  5rem);
+    margin-bottom: 0.75rem;
   }
   .post-time {
     font-family: $deco-text;

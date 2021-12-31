@@ -8,69 +8,72 @@
     
   </head>
   <body>
-    <header class="site-header">
-      <div class="site-header-logo">
-        S<span>N</span>
-      </div>
-      <nav class="site-header-nav">
-        {{ collections.all | eleventyNavigation | eleventyNavigationToHtml | safe }}
-      </nav>
-      
-    </header>
-    <main{% if templateClass %} class="{{ templateClass }}"{% endif %}>
-      {{ content | safe }}
-    </main>
-
-    <footer class="site-footer">
-      <div class="content-wrapper two-one">
-        <div>
-          <h1>Schmidt Notes</h1>
-          <p>Thanks for reading. If you find this content interesting consider donating to a junior cycling program called High Desert Devo that I'm involved with <a href="https://www.highdesertdevo.org/donate">here</a>.</p>
+    <div class="site-wrapper">
+      <header class="site-header">
+        <div class="site-header-logo">
+          S<span>N</span>
         </div>
-        {% include "social.njk" %}
-      </div>
-      <div class="footer-ticker">
-        <ul>
-          <li>Trees</li>
-          <li>CSS</li>
-          <li>Snow</li>
-          <li>tidyverse</li>
-          <li>Skiing</li>
-          <li>Coding</li>
-          <li>Chocolate Labs</li>
-          <li>Snow</li>
-          <li>HTML</li>
-          <li>Machine Learning</li>
-          <li>Back Packing</li>
-          <li>Beer</li>
-          <li>Desert</li>
-          <li>JS</li>
-          <li>Coffee</li>
-          <li>Biology</li>
-          <li>Mountain Bikes</li>
-          <li>R</li>
-          <li>Trees</li>
-          <li>CSS</li>
-          <li>Snow</li>
-          <li>tidyverse</li>
-          <li>Skiing</li>
-          <li>Coding</li>
-          <li>Chocolate Labs</li>
-          <li>Snow</li>
-          <li>HTML</li>
-          <li>Machine Learning</li>
-          <li>Back Packing</li>
-          <li>Beer</li>
-          <li>Desert</li>
-          <li>JS</li>
-          <li>Coffee</li>
-          <li>Biology</li>
-          <li>Mountain Bikes</li>
-          <li>R</li>
-        </ul>
-      </div>
-      
-    </footer>
+        <nav class="site-header-nav">
+          {{ collections.all | eleventyNavigation | eleventyNavigationToHtml | safe }}
+        </nav>
+        
+      </header>
+      <main{% if templateClass %} class="{{ templateClass }}"{% endif %}>
+        {{ content | safe }}
+      </main>
+
+      <footer class="site-footer">
+        <div class="content-wrapper two-one">
+          <div>
+            <h1>Schmidt Notes</h1>
+            <p>Thanks for reading. If you find this content interesting or helpful consider donating to a junior cycling program called High Desert Devo that I'm involved with.</p>
+            <a class="link-to" href="https://www.highdesertdevo.org/donate">Donate Here</a>
+          </div>
+          {% include "social.njk" %}
+        </div>
+        <div class="footer-ticker">
+          <ul>
+            <li>Trees</li>
+            <li>CSS</li>
+            <li>Snow</li>
+            <li>tidyverse</li>
+            <li>Skiing</li>
+            <li>Coding</li>
+            <li>Chocolate Labs</li>
+            <li>Snow</li>
+            <li>HTML</li>
+            <li>Machine Learning</li>
+            <li>Back Packing</li>
+            <li>Beer</li>
+            <li>Desert</li>
+            <li>JS</li>
+            <li>Coffee</li>
+            <li>Biology</li>
+            <li>Mountain Bikes</li>
+            <li>R</li>
+            <li>Trees</li>
+            <li>CSS</li>
+            <li>Snow</li>
+            <li>tidyverse</li>
+            <li>Skiing</li>
+            <li>Coding</li>
+            <li>Chocolate Labs</li>
+            <li>Snow</li>
+            <li>HTML</li>
+            <li>Machine Learning</li>
+            <li>Back Packing</li>
+            <li>Beer</li>
+            <li>Desert</li>
+            <li>JS</li>
+            <li>Coffee</li>
+            <li>Biology</li>
+            <li>Mountain Bikes</li>
+            <li>R</li>
+          </ul>
+        </div>
+        
+      </footer>
+    </div>
 
     <!-- Current page: {{ page.url | url }} -->
     <script src="/js/main.js"></script>

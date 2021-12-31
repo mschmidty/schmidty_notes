@@ -5,3 +5,7 @@
   margin-right: auto;
   margin-left: auto;
 }
+
+@mixin clamp-font-size($small-font-size, $large-font-size) {
+  font-size: clamp($small-font-size, -1.6471rem + 11.7647vw,  $large-font-size);
+}

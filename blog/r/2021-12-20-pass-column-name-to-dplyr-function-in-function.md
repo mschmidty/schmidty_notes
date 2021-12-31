@@ -21,7 +21,7 @@ df<-data.frame(fruits, country, weight)
 ## Write function that filters a column name by value.
 filter_fruit<-function(x, col_name=fruits, value="apple"){
   x%>%
-    filter({{col_name}}==value)
+    filter({% raw %}{{col_name}} {% endraw %}==value)
 }
 ```
 
@@ -46,7 +46,7 @@ r$> filter_fruit(df, col_name=weight, value=20)
 2 banana     USA     20
 ```
 
-The key is the  around the column name and not adding quotes around the function parameter defaults when writing the function. 
+The key is the {% raw %}` {{_}} ` {% endraw %}around the column name and not adding quotes around the function parameter defaults when writing the function. 
 
 You can find more information in the [Tidyverse Documentation](https://dplyr.tidyverse.org/articles/programming.html#indirection-2).
 
