@@ -33,6 +33,15 @@
     flex-direction: row;
     justify-content: start;
     @include content-wrap;
+    @media all and(max-width:600px){
+      display: block;
+      span{
+        display:none;
+      }
+      .post-tags{
+        margin-top: 0.4rem;
+      }
+    }
     time, span {
       margin-right: 0.3rem;
     }
@@ -51,11 +60,47 @@
     font-size: 1.05rem;
     margin-right: 0;
   }
+  .post-tags{
+    display: flex;
+    align-items: center;
+    position:relative;
+    bottom: 3px;
+    h4 {
+      font-family: $deco-text;
+    }
+  }
   .post-tag-list a.tag-list-tag{
     font-size: 1rem;
+    line-height: 1.2;
   }
 }
 
 .post-content li {
   line-height: 1.8;
+}
+
+.post-next {
+  margin-top: 40px;
+  font-family: $deco-text;
+  display: flex;
+  justify-content: space-between;
+  background: $tan;
+  padding: 1.5rem;
+  border-radius: 5px;
+  span {
+    width: 50%;
+    &:nth-of-type(2){
+      text-align: right;
+    }
+  }
+  @media all and(max-width: 600px){
+    flex-direction: column;
+    span {
+      width: 100%;
+      margin-top: 1rem;
+      &:nth-of-type(2){
+        text-align: left;
+      }
+    }
+  }
 }

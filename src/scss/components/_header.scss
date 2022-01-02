@@ -30,7 +30,7 @@
     text-decoration: none;
     font-family: $header-text;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 0.9250rem + 0.3333vw, 1.1rem);
     &:hover {
       color: $link;
     }
