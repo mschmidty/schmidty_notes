@@ -1,5 +1,5 @@
 .post-content {
-  width: 97%;
+  width: 95%;
   margin: 0 auto;
   position: relative;
   >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote, >table {
@@ -86,7 +86,7 @@
   justify-content: space-between;
   background: $tan;
   padding: 1.5rem;
-  border-radius: 5px;
+  border-radius: 10px;
   span {
     width: 50%;
     &:nth-of-type(2){
@@ -102,5 +102,48 @@
         text-align: left;
       }
     }
+  }
+}
+
+.related-posts{
+  margin-top: 1.6rem;
+  h3 {
+    text-align:center;
+  }
+  ul {
+    list-style-type:none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 1rem;
+  }
+  li {
+    align-self: stretch;
+    justify-self: stretch;
+  }
+  a {
+    display: block;
+    background: #DFF1FF;
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100%;
+    transition: 0.3s box-shadow ease;
+    &:hover{
+      box-shadow:  20px 20px 60px #d9d9d9,
+             -20px -20px 60px #ffffff;
+    }
+  }
+  h4 {
+    color: $black;
+  }
+  .post-time {
+    font-size: 0.9rem;
+  }
+  @media all and(max-width: 600px){
+    ul{
+      grid-template-columns: 1fr; 
+      row-gap: 1rem;
+    }
+    
   }
 }

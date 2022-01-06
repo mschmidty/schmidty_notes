@@ -19,10 +19,28 @@ layout: layouts/base.njk
     </div>
   </header>
   {{ content | safe }}
-  <footer class="text-wrapper post-next">
-    {% set previousPost = collections.posts | getPreviousCollectionItem(page) %}
-    {% set nextPost = collections.posts | getNextCollectionItem(page) %}
-    {% if previousPost %}<span>Previous Post: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></span>{% endif %}
-    {% if nextPost %}<span>Next Post: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></span>{% endif %}
+  <footer class="text-wrapper">
+    <div class="post-next">
+      {% set previousPost = collections.posts | getPreviousCollectionItem(page) %}
+      {% set nextPost = collections.posts | getNextCollectionItem(page) %}
+      {% if previousPost %}<span>Previous Post: <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a></span>{% endif %}
+      {% if nextPost %}<span>Next Post: <a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a></span>{% endif %}
+    </div>
+    <div class="related-posts">
+      {% set similar = collections.posts | similarPosts(tags, page.inputPath)  %}
+      <h3>Related Posts</h3>
+      <ul>
+        {% for post in similar %}
+          {% if loop.index0 < 3 %}
+          <li>
+            <a href="{{ post.url }}">
+              <h4>{{ post.data.title }}</h4>
+              <time datetime="{{ post.data.date | htmlDateString }}" class="post-time">{{ post.data.date | readableDate }}</time>
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
   </footer>
 </article>

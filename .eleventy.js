@@ -77,6 +77,34 @@ module.exports = function(eleventyConfig) {
     return filterTagList([...tagSet]);
   });
 
+  const getSimilarCategories = function(categoriesA, categoriesB) {
+    return categoriesA.filter(Set.prototype.has, new Set(categoriesB)).length;
+  }
+
+  eleventyConfig.addFilter("similarPosts", (collection, tags, path) => {
+    const newTags = filterTagList(tags)
+    return collection.filter((post) => {
+      return getSimilarCategories(post.data.tags, newTags) >= 1 && post.data.page.inputPath !== path;
+    }).sort((a,b) => {
+      return getSimilarCategories(b.data.tags, newTags) - getSimilarCategories(a.data.tags, newTags);
+    });
+    // return collection.filter((post) => {
+    //   return post.data.tags.filter(Set.prototype.has, new Set(newTags)).length >= 1;
+    // });
+  });
+
+  //Get Related Posts bassed on tags
+  // eleventyConfig.addCollection("relatedPosts", function(collectionApi, tags) {
+  //   const filteredTags = filterTagList(tags);
+  //   let relatedPostsList = new Set();
+
+  //   filteredTags.forEach(item=>{
+  //     const relatedPosts = collectionApi.getFilteredByTag(item);
+  //     relatedPostsList.add(relatedPosts);
+  //   }) 
+  //   return [...relatedPostsList]
+  // });
+
   return{
     templateFormats: [
       "md",
