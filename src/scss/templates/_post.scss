@@ -2,7 +2,7 @@
   width: 95%;
   margin: 0 auto;
   position: relative;
-  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote, >table {
+  >p, >a, >h1, >h2, >h3, >h4, >h5, >h6, >ol, >ul, >time, >span, >blockquote, >table, >figure{
     position: relative;
     width: 100%; 
     max-width: 700px; 
@@ -10,8 +10,9 @@
     margin-left: auto;
   }
   figure{
-    margin-right: 0;
-    margin-left: 0;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 1rem;
   }
   img{
     width: 100%;
@@ -77,6 +78,10 @@
 
 .post-content li {
   line-height: 1.8;
+}
+
+.post-content img {
+  margin: 2rem auto;
 }
 
 .post-next {
