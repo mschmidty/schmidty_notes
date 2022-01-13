@@ -6,10 +6,12 @@ tags: [ art ]
 p5: true
 ---
 
-Over the holiday break I worked on three things: eating, sleeping, and coding.  I've long been a fan of the [Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw) but I have never done much with [p5js](https://p5js.org/). Then I happened on [Tyler Hobbs and his Fridenza](https://tylerxhobbs.com/fidenza) generative art pieces.  The following are what I've created so far. And I have to say that just making these few pieces has really helped me practice javascript. 
+Over the holiday break I worked on three things: eating, sleeping, and coding.  For the coding part I accomplished two things.  I this website to [eleventy js](https://www.11ty.dev/) and redesigned it (lightly!) and started playing around with p5js again.  This post the first of a few about making art and getting better at javascript with p5js and the Coding train.  I'll write up a post about porting over the eleventy....maybe. 
+
+I've long been a fan of the [Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw) but I have never done much with [p5js](https://p5js.org/). Then I happened on [Tyler Hobbs and his Fridenza](https://tylerxhobbs.com/fidenza) generative art pieces.  Tyler makes some really amazing stuff. Tyler makes his stuff in java using processing (I belive?).  In my multi year attempt to bet better at javascript, I thought it would be good to try my hand at the art thing using p5, the javascript equivalent to processing.   I'll write up a few posts with my creations. 
 
 ## Random Circles
-At first I just tried non-overlapping circles. I loved making this.  But I relies on just randomly placing the circles.  If they overlap it rejects them.  It literally takes 10,000 iterations, which is slow. 
+At first I just tried non-overlapping circles. I loved making this.  But I relies on just randomly placing the circles.  If they overlap it rejects them.  It literally takes 10,000 iterations, which is slow. But I like it nontheless.  When I first made it I was so stoked.  But now it's sheen has worn off and I'm interested in making other things. 
 
 <figure id="randomCirclePacking"></figure>
 
@@ -90,7 +92,8 @@ function drawTarget(xloc, yloc, size, num, pallet = false){
 
 </script>
 
-This code randomly selects a pallet. Each time you refresh the page it should grab a random pallet and randomly plot the circles again. I got the pallets from a wonderful R package called [MetBrewer](https://github.com/BlakeRMills/MetBrewer/).  I definitely recommend checking it out. 
+To expand on what is going on here, this code randomly selects a pallet. Each time you refresh the page it should grab a random pallet and randomly plot the circles again. I got the pallets from a wonderful R package called [MetBrewer](https://github.com/BlakeRMills/MetBrewer/).  I definitely recommend checking it out. 
+
 ```js
 <script>
   const pal = [
@@ -107,13 +110,13 @@ This code randomly selects a pallet. Each time you refresh the page it should gr
 ]
 
 let circles = [];
+
 function setup(){
   noLoop();
   let c = createCanvas(700, 1000)
   c.parent("randomCirclePacking")
   background('#efefef')
   noStroke();
-  frameRate(0.5);
 
   for(let i = 0; i<50000; i++){
     let circle = {
@@ -158,7 +161,6 @@ function drawTarget(xloc, yloc, size, num, pallet = false){
   
 	let c1 = currentPal[colorNumber1];
 	let c2 = currentPal[colorNumber2]
-	//console.log(c1)
 
 	for(let i = 0; i<num; i++){
 		let currentColor = lerpColor(color(c1), color(c2), 1/num*i)
@@ -169,6 +171,6 @@ function drawTarget(xloc, yloc, size, num, pallet = false){
 
 </script>
 ```
-And I was going to put another sketch down here but I guess I'll save that for a new post because namespacing p5 sketches would be tough. 
+And I was going to put another sketch down here but I guess I'll save that for a new post because I can't get namespacing to work. 
 
 
