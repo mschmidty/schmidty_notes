@@ -2,7 +2,7 @@
 layout: post
 title:  "p5 Art - First Tries"
 date: 2022-02-11
-tags: [ art ]
+tags: [ art, javascript ]
 p5: true
 ---
 
