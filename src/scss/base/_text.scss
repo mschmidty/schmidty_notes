@@ -11,6 +11,9 @@ body{
   font-family: $body-text;
   color: $black;
 }
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
 h1,h2,h3,h4,h5,h6{
   font-family: $header-text;
   font-weight: 700;
@@ -69,6 +72,5 @@ blockquote {
 }
 code {
   font-family: $code-text;
-  font-weight: bold;
   color: $brown;
 }

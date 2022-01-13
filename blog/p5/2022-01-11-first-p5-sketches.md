@@ -96,7 +96,7 @@ To expand on what is going on here, this code randomly selects a pallet. Each ti
 
 ```js
 <script>
-  const pal = [
+const pal = [
   ["#6b200c", "#973d21", "#da6c42", "#ee956a", "#fbc2a9", "#f6f2ee", "#bad6f9", "#7db0ea", "#447fdd", "#225bb2", "#133e7e"],
   ["#e76254", "#ef8a47", "#f7aa58", "#ffd06f", "#ffe6b7", "#aadce0", "#72bcd5", "#528fad", "#376795", "#1e466e"],
   ["#660d20", "#e59a52", "#edce79", "#094568", "#e1c59a"], //Navajo
