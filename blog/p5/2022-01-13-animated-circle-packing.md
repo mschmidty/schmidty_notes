@@ -6,7 +6,7 @@ tags: [ art, javascript ]
 p5: true
 ---
 
-Again here we are attempting to implement circle packing.  This time I wanted to animate circle growth and then stop circle growth before the circles overlapped.  I unabashedly stole most of this from [Daniel Shiffman](https://editor.p5js.org/cah689/sketches/B1kCFI36b), but I wanted to use classes instead of just a circle object.  
+As with my first post, here we are attempting to implement circle packing.  This time I wanted to animate circle growth and then stop circle growth before the circles overlapped.  I unabashedly stole most of this from [Daniel Shiffman](https://editor.p5js.org/cah689/sketches/B1kCFI36b), but I wanted to use classes instead of just a circle object as he does in his example.  
 
 And once again I used a Georgia Okeeffe pallet from the [MetBrewer R Package](https://github.com/BlakeRMills/MetBrewer)
 
