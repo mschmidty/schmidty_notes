@@ -35,6 +35,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/data": "data" });
   //eleventyConfig.addPassthroughCopy("**/*.png");
   eleventyConfig.addPassthroughCopy({"src/js": "js"})
+  eleventyConfig.addPassthroughCopy({ "src/favicon": "/" });
+
 
   //Markdown Settings
   let markdownLibrary = markdownIt({
