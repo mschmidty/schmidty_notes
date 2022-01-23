@@ -13,8 +13,10 @@
     margin-right: auto;
     margin-left: auto;
     margin-bottom: 1rem;
-    width: 100%; 
-    max-width: 700px; 
+    justify-content: center;
+    display:flex;
+    width: 95%; 
+    max-width: 1000px; 
     canvas{
       max-width: 100%;
       height: auto !important; // to over-ride the default style;
