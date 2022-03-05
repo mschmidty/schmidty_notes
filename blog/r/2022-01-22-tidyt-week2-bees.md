@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Tidy Tuesday: Week 2 Bees"
-date: 2022-12-22
+date: 2022-01-22
 tags: [ tidytuesday ]
 ---
 
