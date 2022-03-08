@@ -17,14 +17,29 @@ Go to `Code>Preferences>Keyboard Shortcuts` and then in the upper right hand cor
 ```r
 [
   {
-    "key": "cmd+alt+i",
+    "key": "cmd+alt+i", # On windows: "ctrl+alt+i". 
     "command": "editor.action.insertSnippet",
     "when": "editorTextFocus",
-    "args": {"snippet": "```r\n$0\n```"}
+    "args": {"snippet": "```{r}\n$0\n```"}
   },
 ]
 ```
 
 Now you can add a Rmarkdown code junk just like Rstudio with `cmd+alt+i`. 
 
+## Options Code Chunk
 
+I often use an options at the top of my code Rmarkdown files to set max print or use "quartz" as my graphics device ("windows" on pc).  You can similarly map a an options code chunk with: 
+
+```r
+[
+  #....Prvious Code chunks
+  ,
+  {
+    "key": "cmd+alt+o", # On windows: "ctrl+alt+o". 
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {"snippet": "options(\n  max.print=100,\n  vsc.use_httpgd=TRUE,\n  device='quartz'\n)"}
+  }
+]
+```
