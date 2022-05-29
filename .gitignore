@@ -1,6 +1,9 @@
 # Eleventy
 _site/
 
+#Mac
+.DS_Store
+
 # Logs
 logs
 *.log
