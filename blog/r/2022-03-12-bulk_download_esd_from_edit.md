@@ -5,7 +5,7 @@ date: 2022-03-17
 tags: [ "Ecological Site Descriptions" ]
 ---
 
-I recently needed to download  Ecological Site Descriptions (ESD) for a large part of the area I work in.  The NRCS, Jornada Experimental Range and New Mexico State University have a handy website, [EDIT]https://edit.jornada.nmsu.edu/) that they provide all ESDs by Major Land Resource Areas (MLRA), wrapped in a nice user interface.  In the past I've just used the site to view and download the ESDs as I needed them.  But today I noticed that the EDIT website added a [Developer Resources](https://edit.jornada.nmsu.edu/resources/esd) section page. It even has examples in R. I figured it was time to get to know the EDIT API. 
+I recently needed to download  Ecological Site Descriptions (ESD) for a large part of the area I work in.  The NRCS, Jornada Experimental Range and New Mexico State University have a handy website, [EDIT](https://edit.jornada.nmsu.edu/) that they provide all ESDs by Major Land Resource Areas (MLRA), wrapped in a nice user interface.  In the past I've just used the site to view and download the ESDs as I needed them.  But today I noticed that the EDIT website added a [Developer Resources](https://edit.jornada.nmsu.edu/resources/esd) section page. It even has examples in R. I figured it was time to get to know the EDIT API. 
 
 The code below will download all ESD's in MLRA in Colorado. It is does the same thing as Tutorial 2 on EDITs website but uses tidy packages.
 

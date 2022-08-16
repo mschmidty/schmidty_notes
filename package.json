@@ -8,7 +8,7 @@
     "build-eleventy": "npx @11ty/eleventy",
     "watch:sass": "npx sass src/scss:_site/css --watch",
     "sass-build": "sass src/scss:_site/css",
-    "start": "npm run watch:eleventy & npm run watch:sass",
+    "dev": "npm run watch:eleventy & npm run watch:sass",
     "eleventy-build": "npx @11ty/eleventy"
   },
   "author": "@mschmidty",

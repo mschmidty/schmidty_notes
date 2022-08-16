@@ -25,6 +25,9 @@
   img{
     width: 100%;
   }
+  img.small-image{
+    max-width: 200px;
+  }
   .portrait-image-js-added{
     display: block;
     width: 100%;
