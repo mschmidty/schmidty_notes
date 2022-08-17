@@ -30,10 +30,8 @@ module.exports = function(eleventyConfig) {
 
  //passthroughs
   eleventyConfig.addPassthroughCopy("svg");
-  //eleventyConfig.addPassthroughCopy("**/*.jpg");
   eleventyConfig.addPassthroughCopy({ "src/assets": "img" });
   eleventyConfig.addPassthroughCopy({ "src/data": "data" });
-  //eleventyConfig.addPassthroughCopy("**/*.png");
   eleventyConfig.addPassthroughCopy({"src/js": "js"})
   eleventyConfig.addPassthroughCopy({ "src/favicon": "/" });
 
@@ -79,6 +77,7 @@ module.exports = function(eleventyConfig) {
     return filterTagList([...tagSet]);
   });
 
+  // Get Similar Posts
   const getSimilarCategories = function(categoriesA, categoriesB) {
     return categoriesA.filter(Set.prototype.has, new Set(categoriesB)).length;
   }
@@ -90,22 +89,14 @@ module.exports = function(eleventyConfig) {
     }).sort((a,b) => {
       return getSimilarCategories(b.data.tags, newTags) - getSimilarCategories(a.data.tags, newTags);
     });
-    // return collection.filter((post) => {
-    //   return post.data.tags.filter(Set.prototype.has, new Set(newTags)).length >= 1;
-    // });
   });
 
-  //Get Related Posts bassed on tags
-  // eleventyConfig.addCollection("relatedPosts", function(collectionApi, tags) {
-  //   const filteredTags = filterTagList(tags);
-  //   let relatedPostsList = new Set();
+  // Use excerpt Separator
+  eleventyConfig.setFrontMatterParsingOptions({
+    excerpt: true,
+    excerpt_separator: "<!-- excerpt -->"
+  })
 
-  //   filteredTags.forEach(item=>{
-  //     const relatedPosts = collectionApi.getFilteredByTag(item);
-  //     relatedPostsList.add(relatedPosts);
-  //   }) 
-  //   return [...relatedPostsList]
-  // });
 
   return{
     templateFormats: [
