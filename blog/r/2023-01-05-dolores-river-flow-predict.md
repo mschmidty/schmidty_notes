@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Prediction if the Dolores River Will Run V2"
+title: "Predicting if the Dolores River Will Have a Raftable Release V2"
 date: 2023-01-05
 tags: [ "Machine Learning" ]
 ---
 
-Will there be a raftable release below McPhee Dam this year? I hope so.  In this post I'll use [`{tidymodels}`](https://www.tidymodels.org/) R package to predict the number of raftable release days Xgboost gradient boosted trees.  This post is an update to an [earlier post](/blog/r/2020-02-09-dolores-predict/). I take a slightly different approach to build this model and I think the model is more accurate than the last model I built.
+Will there be a raftable release below McPhee Dam this year? I hope so.  In this post I'll use the [`{tidymodels}`](https://www.tidymodels.org/) R package to predict the number of raftable release days with Xgboost.  This post is an update to an [earlier post](/blog/r/2020-02-09-dolores-predict/). I take a slightly different approach to build this model and I think the model is more accurate than the last model I built.
 
 ## All the packages I will be using
 First lets load all the packages we will need to get the data.
