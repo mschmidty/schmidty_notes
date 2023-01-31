@@ -1,13 +1,14 @@
 ---
 layout: post
 title: "A few helpers for working with the {targets} package in R."
-date: 2023-01-03
+date: 2023-01-31
 tags: [ "targets" ]
 ---
 
+I started to use the [`{targets}`](https://books.ropensci.org/targets/) package for some of my larger projects.  It was a little challengeing for me to wrap my head around but after working through some initial problems I think it will help me stay organized and write code in a more composable way.  Below are a few notes that I needed to keep coming back to when I was getting started. If you need a comprehensive `{targets}` getting starte I suggest the targets book linked above or in the References section below. 
 
 ## Start a {targets} project
-
+In an empty or exsiting R project directory run: 
 ```r
 targets::use_targets()
 ```
@@ -61,5 +62,37 @@ output_func<-function(data, output_path){
 }
 ```
 
+## Rmarkdown
+To start using Rmarkdown you need the [`{tarchetypes} package`](https://github.com/ropensci/tarchetypes).  Load it right under the `{targets}` package in your `_targets.R` file with `library(tarchytypes)`.
+
+Then to render a Rmarkdown documents in your targets list you can use `tar_render()`.
+
+```r
+list(
+  ## More targets above
+  tar_render(documantation, "Rmd/documentation.Rmd")
+  ## More targets
+)
+
+```
+
+Within the Rmarkdown file things are a little different.  The two I've used the most are: 
+
+```r
+tar_read(name_of_target) ## Loads an R object such as a tibble or sf object.
+tar_load(name_of_target) ## Loads a plot for example. 
+```
+
+
+## Spatial Rasters from the `{tera}` package had problems
+One problem I had with working with targets is, I work with a lot of spatial grid data.  I've been using the [`{terra}`] package as my go to grid package.  However a bit stumbling block for me was you can't write a SpatialRaster as a targets object.  Or at least I couldn't figure out how.  I put up a [question on Stack Exchange](https://stackoverflow.com/q/74855695/3088902) and the terra package maintainer was kind enough to respond. But we never got to a resolution.  
+
+I also reached out on Mastadon and Miles McBain, Targets evangelist, was kind enough to get back to me, but also no 
+
+Well that all for now. 
+
+## References
+* [Targets Book](https://books.ropensci.org/targets/)
+* [Targets on CRAN](https://cran.r-project.org/web/packages/targets/index.html)
 
 
