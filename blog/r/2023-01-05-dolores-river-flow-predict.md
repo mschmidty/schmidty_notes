@@ -30,7 +30,7 @@ theme_update(
 ```
 
 ## Getting the data
-Let's get the data.  We need three datasets to make the prediction: 
+We need three datasets to make the prediction: 
 1. **Snow pack data** - we get this from the NRCS SNOTEL network using the [`{snotelr}`](https://cran.r-project.org/web/packages/snotelr/index.html). We will get water equivalent data for four sites: El Diente Peak, Lizard Head Pass, and Lone Cone and Scotch Creek.  These sites were selected because they go back to when the damn was built and they cover a few different areas within the Dolores River Drainage. Admittedly I wish they were a bit more spread out. 
 2. **McPhee Dam Volume** - two things go into if the McPhee will fill up and have enough excess to have a spill at a raftable level: the current damn volume and the current snowpack.  To get the McPhee dam daily volume I used the [`{RNRCS}` package](https://github.com/rhlee12/RNRCS). In the past I used this package to get the SNOTEL site data as well but for some reason I couldn't get it to work this go round. 
 3. **River Flow Rates Below McPhee Dam** - To determine if a raftable release has occurred you need to know what the river level is below McPhee Dam.  For this we pull data from the [USGS Stream Flow Gauge at Bedrock, Colorado](https://waterdata.usgs.gov/monitoring-location/09171100/#parameterCode=00060&period=P7D). For this I just used the [USGS Water Services API](https://waterservices.usgs.gov/rest/DV-Test-Tool.html) which can produce a TSV.  
