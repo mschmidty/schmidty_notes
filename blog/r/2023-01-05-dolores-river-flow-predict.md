@@ -7,6 +7,9 @@ tags: [ "Machine Learning" ]
 
 Will there be a raftable release below McPhee Dam this year? I hope so.  In this post I'll use the [`{tidymodels}`](https://www.tidymodels.org/) R package to predict the number of raftable release days with Xgboost.  This post is an update to an [earlier post](/blog/r/2020-02-09-dolores-predict/). I take a slightly different approach to build this model and I think the model is more accurate than the last model I built.
 
+**Update:**
+I put up an updated model prediction to this [here](blog/r/2023-02-02-Dolores-flow-prediction-plots). It improves drastically on the model below. I basically changed the engine to xgboost count/poisson instead of regular regression because raftable release days is essentially count data.  To do this when setting the engine for the parsnip model you just add a option parameter: `set_engine("xgboost", option="count:poisson").
+
 ## All the packages I will be using
 First lets load all the packages we will need to get the data.
 ```r
