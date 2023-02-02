@@ -89,7 +89,7 @@ One problem I had with working with targets is, I work with a lot of spatial gri
 
 I also reached out on Mastadon and Miles McBain, Targets evangelist, was kind enough to get back to me, but also no resolution. 
 
-<iframe src="https://fosstodon.org/@mschmidty/109542366237497578/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script>
+<p><iframe src="https://fosstodon.org/@mschmidty/109542366237497578/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script></p>
 
 Well that all for now. 
 

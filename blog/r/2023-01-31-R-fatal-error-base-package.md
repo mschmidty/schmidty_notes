@@ -9,11 +9,11 @@ On my Windows work computer I was having a weird problem where R would break aft
 
 Exasperated I reached out on Mastadon: 
 
-<iframe src="https://fosstodon.org/@mschmidty/109784504741280583/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script>
+<p><iframe src="https://fosstodon.org/@mschmidty/109784504741280583/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script></p>
 
 And behold, the hive mind found the problem.  
 
-<iframe src="https://fosstodon.org/@datamaps/109784868982539457/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script>
+<p><iframe src="https://fosstodon.org/@datamaps/109784868982539457/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://fosstodon.org/embed.js" async="async"></script></p>
 
 The problem was that I had old versions of R in my registry keys.  Part of the problem was that I had been deleting my old versions of R and not uninstalling them.  You can manually delete your registry keys by Start>Run and typing "regetit" and hitting OK. I could not do this because my Work IT folks blocked me from even viewing the keys to see if they were the problem.  Lucky for me I hadn't deleted the old version sof R from my recycle bin.  I restored them and uninstalled each one including the most recent version.  I restarted then reinstalled R and haven't had the problem since.  
 
