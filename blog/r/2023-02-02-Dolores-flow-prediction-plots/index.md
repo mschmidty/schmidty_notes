@@ -10,7 +10,7 @@ This post includes just the running prediction of if the Dolores River will have
 In addition, the model was "productionized" (not a real word but I like it) using Github Actions and runs daily at 5am. You can find the scripts for the action [here](https://github.com/mschmidty/dolores_flow_predict).
 
 <figure>
-  <a href="https://raw.githubusercontent.com/mschmidty/dolores_flow_predict/a4fc4a1fffb5d2b0bda0e49ace3e85c5bc2e8786/output/current_prediction.jpg">
-    <img src="https://raw.githubusercontent.com/mschmidty/dolores_flow_predict/a4fc4a1fffb5d2b0bda0e49ace3e85c5bc2e8786/output/current_prediction.jpg" alt="A prediction of if the Dolores River will run" style = "mix-blend-mode: multiply"/>
+  <a href="https://raw.githubusercontent.com/mschmidty/dolores_flow_predict/master/output/current_prediction.jpg">
+    <img src="https://raw.githubusercontent.com/mschmidty/dolores_flow_predict/master/output/current_prediction.jpg" alt="A prediction of if the Dolores River will run" style = "mix-blend-mode: multiply"/>
   </a>
 </figure>
