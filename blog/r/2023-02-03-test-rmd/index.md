@@ -18,7 +18,7 @@ seemed like a pain to get Rmarkdown to work on this site which is
 generated using 11ty (eleventy). Up until now, to get my R work on this
 site, I have been writing R in another document and manually copying
 over code and outputs to markdown files on this site. Given how
-ineficient that process is, I figured it was time to figure out how to
+inefficient that process is, I figured it was time to figure out how to
 write Rmarkdown and render it more seamlessly with this site.
 
 To be clear, this isn’t some automated system to get Rmarkdown to build
@@ -66,7 +66,7 @@ module.exports = function(eleventyConfig){
 }
 ```
 
-I limited to the copy to my `blog/r/` folder becuase that is where
+I limited to the copy to my `blog/r/` folder because that is where
 Rmarkdown files will be and I don’t want to copy over my assets folder
 twice which would return an error. That’s it. That is all the eleventy
 configuration you need to do. Now let’s move on the the Rmarkdown file.
@@ -95,7 +95,7 @@ output:
 The output says markdown document with `md_document`, that is rendered
 using `commonmark` syntax, preserving the yaml (otherwise it is
 removed), and the `df_print: tibble` is optional to output tables in
-trunkated fashion.
+truncated fashion.
 
 The last thing I needed to do was add a chunk option for my Rmarkdown
 chunks that would wrap the chunk outputs in code blocks. You can do this

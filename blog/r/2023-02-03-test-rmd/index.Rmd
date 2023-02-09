@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 )
 
 ```
-I write a lot of R in my life.  I'm also a web developer that does most of my writing on this blog in markdown.  Up until now these two worlds have been separate.  I know and use Rmarkdown at work but it always has seemed like a pain to get Rmarkdown to work on this site which is generated using 11ty (eleventy). Up until now, to get my R work on this site, I have been writing R in another document and manually copying over code and outputs to markdown files on this site. Given how ineficient that process is, I figured it was time to figure out how to write Rmarkdown and render it more seamlessly with this site. 
+I write a lot of R in my life.  I'm also a web developer that does most of my writing on this blog in markdown.  Up until now these two worlds have been separate.  I know and use Rmarkdown at work but it always has seemed like a pain to get Rmarkdown to work on this site which is generated using 11ty (eleventy). Up until now, to get my R work on this site, I have been writing R in another document and manually copying over code and outputs to markdown files on this site. Given how inefficient that process is, I figured it was time to figure out how to write Rmarkdown and render it more seamlessly with this site. 
 
 To be clear, this isn't some automated system to get Rmarkdown to build with eleventy.  What it is, is a system to write Rmarkdown, then render that document to a markdown file using R so that eleventy, or another static site generator, can build it into the site. This also isn't a process for folks who just want to write Rmarkdown and nothing else.  For those folks I'd recommend something like blogdown. This is kind of a unique case because I post about things other than R on my blog so I like the flexibility of a non R centric system. 
 
@@ -36,7 +36,7 @@ module.exports = function(eleventyConfig){
   eleventyConfig.addPassthroughCopy("blog/r/**/*.png")
 }
 ```
-I limited to the copy to my `blog/r/` folder becuase that is where Rmarkdown files will be and I don't want to copy over my assets folder twice which would return an error. That's it.  That is all the eleventy configuration you need to do. Now let's move on the the Rmarkdown file.
+I limited to the copy to my `blog/r/` folder because that is where Rmarkdown files will be and I don't want to copy over my assets folder twice which would return an error. That's it.  That is all the eleventy configuration you need to do. Now let's move on the the Rmarkdown file.
 
 ## Rmarkdown front matter
 The important part here is the output section.  This is what Rmarkdown uses to determine how to render your Rmarkdown. 
@@ -55,7 +55,7 @@ output:
     df_print: tibble
 ---
 ```
-The output says markdown document with `md_document`, that is rendered using `commonmark` syntax, preserving the yaml (otherwise it is removed), and the `df_print: tibble` is optional to output tables in trunkated fashion. 
+The output says markdown document with `md_document`, that is rendered using `commonmark` syntax, preserving the yaml (otherwise it is removed), and the `df_print: tibble` is optional to output tables in truncated fashion. 
 
 The last thing I needed to do was add a chunk option for my Rmarkdown chunks that would wrap the chunk outputs in code blocks.  You can do this like so: 
 ```r
