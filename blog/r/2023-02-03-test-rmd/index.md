@@ -2,7 +2,7 @@
 layout: post
 title: 'Using Rmarkdown with Eleventy'
 author: 'Michael Schmidt'
-date: '2023-02-03'
+date: 2023-02-09
 tags: ["Eleventy", "Rmd"]
 output:
   md_document:
@@ -125,21 +125,20 @@ penguins
 
 ``` r
 ## # A tibble: 344 × 8
-##    species island bill_…¹ bill_…² flipp…³ body_…⁴ sex    year
-##    <fct>   <fct>    <dbl>   <dbl>   <int>   <int> <fct> <int>
-##  1 Adelie  Torge…    39.1    18.7     181    3750 male   2007
-##  2 Adelie  Torge…    39.5    17.4     186    3800 fema…  2007
-##  3 Adelie  Torge…    40.3    18       195    3250 fema…  2007
-##  4 Adelie  Torge…    NA      NA        NA      NA <NA>   2007
-##  5 Adelie  Torge…    36.7    19.3     193    3450 fema…  2007
-##  6 Adelie  Torge…    39.3    20.6     190    3650 male   2007
-##  7 Adelie  Torge…    38.9    17.8     181    3625 fema…  2007
-##  8 Adelie  Torge…    39.2    19.6     195    4675 male   2007
-##  9 Adelie  Torge…    34.1    18.1     193    3475 <NA>   2007
-## 10 Adelie  Torge…    42      20.2     190    4250 <NA>   2007
-## # … with 334 more rows, and abbreviated variable names
-## #   ¹​bill_length_mm, ²​bill_depth_mm, ³​flipper_length_mm,
-## #   ⁴​body_mass_g
+##    species island    bill_length_mm bill_…¹ flipp…² body_…³ sex    year
+##    <fct>   <fct>              <dbl>   <dbl>   <int>   <int> <fct> <int>
+##  1 Adelie  Torgersen           39.1    18.7     181    3750 male   2007
+##  2 Adelie  Torgersen           39.5    17.4     186    3800 fema…  2007
+##  3 Adelie  Torgersen           40.3    18       195    3250 fema…  2007
+##  4 Adelie  Torgersen           NA      NA        NA      NA <NA>   2007
+##  5 Adelie  Torgersen           36.7    19.3     193    3450 fema…  2007
+##  6 Adelie  Torgersen           39.3    20.6     190    3650 male   2007
+##  7 Adelie  Torgersen           38.9    17.8     181    3625 fema…  2007
+##  8 Adelie  Torgersen           39.2    19.6     195    4675 male   2007
+##  9 Adelie  Torgersen           34.1    18.1     193    3475 <NA>   2007
+## 10 Adelie  Torgersen           42      20.2     190    4250 <NA>   2007
+## # … with 334 more rows, and abbreviated variable names ¹​bill_depth_mm,
+## #   ²​flipper_length_mm, ³​body_mass_g
 ```
 
 This is some text.
