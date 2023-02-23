@@ -1,4 +1,4 @@
-const postContent = document.querySelector(".post-content");
+const postContent = document.querySelector("#post-content");
 if(postContent){
   const postImages = postContent.getElementsByTagName('img');
   [...postImages].forEach(image=>{

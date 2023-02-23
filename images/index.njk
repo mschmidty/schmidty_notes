@@ -1,0 +1,18 @@
+---
+layout: page
+title: Photography
+subtitle: Images I've Taken Over The Years
+eleventyNavigation:
+  key: Photography
+  order: 3
+---
+<div class="photography-image-index">
+  {% for image in imagesData %}
+  <a href="/images/{{ image.asset_id }}">
+    <img 
+      src="{{image.smallImage}}" 
+      alt="{{ image.context.custom.alt if image.context else 'Sorry, I\'m a bad person and have not added an alt text.'}}"
+    />
+  </a>
+  {% endfor %}
+</div>

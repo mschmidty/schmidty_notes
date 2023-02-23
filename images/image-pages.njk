@@ -1,0 +1,29 @@
+---
+layout: page
+pagination:
+  data: imagesData
+  size: 1
+  alias: image
+  addAllPagesToCollections: true
+permalink: images/{{ image.asset_id }}/
+
+---
+<div class="photography-image">
+  <div class="photography-image-text">
+    <div>
+      <h3>{{ image.context.custom.caption if image.context.custom.caption else "Untitled"}}</h3>
+      <p>{{ image.context.custom.alt if image.context.custom.alt }}</p>
+    </div>
+    <p class="blog-item-time">{{ image.context.custom.Year if image.context.custom.Year else "Unknown Time"}} | {{ image.context.custom.Location if image.context.custom.Location else "Unknown Location"}}</p>
+  </div>
+  <img 
+    src="{{image.mediumImage}}" 
+    srcset="
+      {{image.smallImage}} 600w,
+      {{image.mediumImage}} 1000w,
+      {{image.largeImage}} 1500w,
+      {{image.extraLargeImage}} 2200w
+    "
+    alt="{{ image.context.custom.alt if image.context else 'Sorry, I\'m a bad person and have not added an alt text.'}}"
+  />
+</div>

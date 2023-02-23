@@ -4,7 +4,7 @@ title: About Me
 subtitle: Yep!
 eleventyNavigation:
   key: About
-  order: 3
+  order: 4
 ---
 
 Hello, my name is Michael Schmidt.  I'm a wildlife biologist for the Bureau of Land Management and a freelance web developer.  I'm also a coach and board member for a pretty cool youth cycling program, [High Desert Devo](https://www.highdesertdevo.org/). I live in southwest Colorado. 
