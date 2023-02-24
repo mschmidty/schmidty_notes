@@ -29,8 +29,8 @@ module.exports = async function(){
         return {...resource, extraSmallImage, smallImage, mediumImage, largeImage, extraLargeImage}
       })
       
-      console.log(imageData);
-      console.log(imageData[1].context)
+      // console.log(imageData);
+      // console.log(imageData[1].context)
       return imageData;
       } catch (error) {
       console.error(error);
