@@ -1,7 +1,7 @@
 .photography-image {
   background: #FFFFFF;
   margin-bottom: 3rem;
-  padding: 2rem;
+  padding: 3%;
   box-shadow: 0 2px 1px rgba(0,0,0,0.09), 
               0 4px 2px rgba(0,0,0,0.09), 
               0 8px 4px rgba(0,0,0,0.09), 
@@ -14,16 +14,19 @@
   }
   .photography-image-text {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
+    >div {
+      display: flex;
+      align-items:flex-end;
+      flex-wrap: wrap;
+      h3 {
+        padding-right: 1rem;
+      }
+    }
     .blog-item {
       display: block;
     }
     .blog-item-time{
       flex-shrink: 0;
-      margin-left: 4rem;
     }
   }
   p {

@@ -12,9 +12,9 @@ permalink: images/{{ image.asset_id }}/
   <div class="photography-image-text">
     <div>
       <h3>{{ image.context.custom.caption if image.context.custom.caption else "Untitled"}}</h3>
-      <p>{{ image.context.custom.alt if image.context.custom.alt }}</p>
+      <p class="blog-item-time">{{ image.context.custom.Year if image.context.custom.Year else "Unknown Time"}} | {{ image.context.custom.Location if image.context.custom.Location else "Unknown Location"}}</p>
     </div>
-    <p class="blog-item-time">{{ image.context.custom.Year if image.context.custom.Year else "Unknown Time"}} | {{ image.context.custom.Location if image.context.custom.Location else "Unknown Location"}}</p>
+    <p>{{ image.context.custom.alt if image.context.custom.alt }}</p>
   </div>
   <img 
     src="{{image.mediumImage}}" 
