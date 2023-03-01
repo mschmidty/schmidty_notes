@@ -4,10 +4,10 @@ pagination:
   data: imagesData
   size: 1
   alias: image
-  addAllPagesToCollections: true
 permalink: images/{{ image.asset_id }}/
-
 ---
+
+<a class="link-to-before back-link-images" href="/images/">Back to Images</a>
 <div class="photography-image">
   <div class="photography-image-text">
     <div>
@@ -27,3 +27,10 @@ permalink: images/{{ image.asset_id }}/
     alt="{{ image.context.custom.alt if image.context else 'Sorry, I\'m a bad person and have not added an alt text.'}}"
   />
 </div>
+
+<nav class="image-navigation" aria-labelledby="my-pagination">
+  <ol>
+    <li>{% if pagination.href.previous %}<a href="{{ pagination.href.previous }}"><span>&lsaquo;&lsaquo;</span> Previous Image </a>{% endif %}</li>
+    <li>{% if pagination.href.next %}<a href="{{ pagination.href.next }}">Next Image<span> &#8250;&#8250;</span></a>{% else %}<a href="/images/">Back to Photos</a>{% endif %}</li>
+  </ol>
+</nav>

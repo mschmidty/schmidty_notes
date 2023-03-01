@@ -1,4 +1,4 @@
-.link-to{
+.link-to, .link-to-after, .link-to-before {
   display:inline-block;
   font-family: $deco-text;
   text-decoration: none;
@@ -7,7 +7,6 @@
   border-radius: 5px;
   margin-top: 25px;
   &:after{
-    content:"->";
     font-size: 1.4rem;
     line-height: 1;
     position: relative;
@@ -20,6 +19,12 @@
     box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
     font-weight: bold;
   }
+}
+.link-to-after:after .link-to{
+  content:"->";
+}
+.link-to-before:before{
+  content:"<-";
 }
 .pagination-nav {
   font-family: $deco-text;

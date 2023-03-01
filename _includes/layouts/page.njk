@@ -1,12 +1,15 @@
 ---
 layout: layouts/base.njk
 ---
-<article class="post-content">
-  <header class="post-header">
-    <h1 class="post-title">{{ title }}</h1>
-    <div class="post-meta">
-      <p class="subtitle">{{ subtitle }}</p>
-    </div>
-  </header>
+<article class="page-content">
+  {% if title or subtitle %}
+    <header class="post-header">
+      <h1 class="post-title">{{ title }}</h1>
+      <div class="post-meta">
+        <p class="subtitle">{{ subtitle }}</p>
+      </div>
+    </header>
+  {% endif %}
+  
   {{ content | safe }}
 </article>
