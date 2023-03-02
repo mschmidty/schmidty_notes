@@ -3,16 +3,22 @@
   grid-template-columns: repeat(auto-fill,minmax(250px, 1fr));
   row-gap: 0.5rem;
   column-gap: 0.5rem;
-    a {
-      height: 300px;
-      img {
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-        vertical-align: middle;
-        border-radius: 2px;
-      }
+  a {
+    height: 300px;
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      vertical-align: middle;
+      border-radius: 2px;
     }
+  }
+  @media (max-width: 600px){
+    grid-template-columns: repeat(auto-fill,minmax(150px, 1fr));
+    a {
+      height: 150px;
+    }
+  }
 }
 
 .photography-image {
