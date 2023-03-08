@@ -4,6 +4,9 @@ const markdownIt = require("markdown-it");
 const implicitFigures = require("markdown-it-implicit-figures");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
+const pluginRss = require("@11ty/eleventy-plugin-rss");
+// const UpgradeHelper = require("@11ty/eleventy-upgrade-help");
+const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 
 module.exports = function(eleventyConfig) {
 
@@ -14,11 +17,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   //add Navigation
   eleventyConfig.addPlugin(eleventyNavigationPlugin);
+  //RSS
+  eleventyConfig.addPlugin(pluginRss);
 
-  
-  eleventyConfig.setBrowserSyncConfig({
-		files: './_site/css/**/*.css'
-	});
+  eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
+  // eleventyConfig.addPlugin(UpgradeHelper);
 
   eleventyConfig.addLayoutAlias("post", "layouts/post.njk");
   eleventyConfig.addLayoutAlias("page", "layouts/page.njk");
@@ -27,6 +30,10 @@ module.exports = function(eleventyConfig) {
 
   // Allow data deep merge - meaning merge in posts.json to each post. 
   eleventyConfig.setDataDeepMerge(true);
+
+  eleventyConfig.setServerOptions({
+    watch: ["_site/**/*.css"]
+  })
 
  //passthroughs
   eleventyConfig.addPassthroughCopy("svg");
@@ -106,6 +113,12 @@ module.exports = function(eleventyConfig) {
       "html",
       "liquid"
     ],
+    dir: {
+      input: "content",
+      includes: "../_includes",
+      data: "../_data",
+      output: "_site"
+    },
     // Pre-process *.md files with: (default: `liquid`)
     markdownTemplateEngine: "njk",
     // Pre-process *.html files with: (default: `liquid`)

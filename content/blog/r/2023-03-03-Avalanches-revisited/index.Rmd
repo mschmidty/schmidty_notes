@@ -1,0 +1,208 @@
+---
+layout: post 
+title: ''
+author: 'Michael Schmidt'
+date: '`r Sys.Date()`'
+output:
+  md_document:
+    variant: commonmark
+    preserve_yaml: TRUE
+    df_print: tibble
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  class.output="r",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{r echo=FALSE}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(extrafont)
+library(MetBrewer)
+library(urbnmapr)
+library(sf)
+library(elevatr)
+library(terra)
+loadfonts(quiet=T)
+
+color_theme <- "Renoir"
+color_theme_gradient <- "Greek"
+caption_text<-"Map by: Mike Schmidt (schmidtynotes.com) | Source: Colorado Avalanche Information Center"
+primary_color <- MetPalettes[color_theme][[1]][[1]][9]
+
+theme_set(theme_light(base_family="Public Sans"))
+theme_update(
+  plot.title=element_text(family="Public Sans Bold", size=20, vjust=3),
+  axis.text = element_text(color="grey50"),
+  plot.caption = element_text(family="Public Sans Light", color="grey50", vjust=-25),
+  plot.margin=unit(c(30,30,50,30), 'pt'),
+  axis.title.y=element_text(angle=90, vjust=5),
+  axis.title.x=element_text(vjust=-7)
+)
+
+```
+
+```{r}
+accidents<-read_xlsx("blog/r/2023-03-03-Avalanches-revisited/Accidents_2022_PUBLIC.xlsx")
+accidents
+```
+
+[source: Colorado Avalanche Information Center](https://avalanche.state.co.us/accidents/statistics-and-reporting)
+```{r}
+accidents|>
+  group_by(AvyYear)|>
+  summarize(total_deaths = sum(Killed))|>
+  ungroup()|>
+  ggplot(aes(AvyYear, total_deaths))+
+  geom_col(fill=primary_color)+
+  ylim(0, 45)+
+  annotate(
+    geom = "curve", x = 2016, y = 40, xend = 2020.75, yend = 37.75 , 
+    curvature = -.3, arrow = arrow(length = unit(2, "mm"))
+  )+
+  annotate(geom = "text", 
+           x = 2005, y = 40, 
+           label = "2021 was the deadliest year\non record with 37 deaths in\nthe United States.", 
+           hjust = "left",
+           size=3)+
+  labs(
+    x="",
+    y="Deaths",
+    title="Number of Avalanche Deaths by Per Year",
+    captions = caption_text
+  )+
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+```
+
+```{r}
+accidents|>
+  group_by(State)|>
+  summarize(total_killed=sum(Killed))|>
+  ungroup()|>
+  mutate(State=fct_reorder(State, total_killed))|>
+  ggplot(aes(State, total_killed))+
+  geom_col(fill=primary_color)+
+  coord_flip()+
+  ylim(0, 350)+
+  geom_text(aes(label=total_killed), hjust=-0.4)+
+  labs(
+    title="Number Killed by Avalanches by State",
+    y="# Killed",
+    caption=caption_text
+  )+
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_text(margin=margin(r=-30))
+  )
+```
+
+```{r}
+accidents_sf<-accidents|>
+  filter(!is.na(lat), lat != 0)|>
+  st_as_sf(coords=c("lon", "lat"), crs=4326)
+
+accidents_sf_co<-accidents_sf|>
+  filter(State=="CO")
+
+counties_sf <- get_urbn_map("counties", sf = TRUE)
+st_crs(counties_sf)<-st_crs(counties_sf)
+
+co_counties<-counties_sf|>
+  filter(state_abbv=="CO")%>%
+  st_transform(st_crs(accidents_sf))
+
+killed_co_counties<-st_intersection(co_counties, accidents_sf_co)|>
+  as_tibble()|>
+  group_by(county_fips)|>
+  summarize(killed=sum(Killed))|>
+  ungroup()
+
+co_counties_killed<-co_counties|>
+  left_join(killed_co_counties, by="county_fips")|>
+  mutate(killed=ifelse(is.na(killed), 0, killed))
+
+ggplot()+
+  geom_sf(data=co_counties_killed, aes(fill=killed), color="white", linewidth=1)+
+  geom_sf(data=accidents_sf_co, shape=23, color="white", fill="black", size=3)+
+  scale_fill_gradientn(colors=met.brewer(color_theme_gradient), trans = 'reverse')+
+  annotate(
+    geom = "curve", 
+    x = -106, y = 39, 
+    xend = -106.8995, yend = 39.2129 , 
+    curvature = .3, 
+    arrow = arrow(length = unit(2, "mm")),
+    color="white"
+  )+
+  annotate(
+    geom = "label", 
+    x = -105.9, y = 39, 
+    label = "Pitkin County has the most\nrecorded deaths in Colorado\nwith 18", 
+    hjust = "left",
+    size=3,
+    fill="white",
+    label.size=NA
+  )+
+  labs(
+    title="Number of Deaths by County in Colorado",
+    caption=caption_text,
+    fill="# Deaths"
+  )+
+  guides(
+    fill = guide_legend(
+      title.position="bottom",
+      label.position="top"
+    )
+  )+
+  theme(
+    axis.text=element_blank(),
+    panel.grid.major=element_blank(),
+    panel.grid.minor=element_blank(),
+    panel.border=element_blank(),
+    plot.title=element_text(hjust=0.5),
+    axis.title.x=element_blank(),
+    axis.title.y=element_blank(),
+    legend.position=c(0.8,0.875),
+    legend.direction="horizontal",
+    legend.key.width=unit(50, "pt"),
+    legend.key.height=unit(9, "pt"),
+    legend.title=element_text(hjust=0.5, family="Public Sans Bold"),
+    plot.caption = element_text(family="Public Sans Light", color="grey50", vjust=-15),
+    plot.margin=unit(c(20,20,20,20), 'pt'),
+  )
+```
+
+```{r}
+elev_us<-get_elev_raster(accidents_sf, z=8)
+
+as(elev_us, "SpatRaster")
+
+plot(elev_us)
+
+accidents_sf|>
+  bind_rows(terra::extract(as(elev_us, "SpatRaster"),accidents_sf))|>
+  View()
+
+
+ggplot()+
+  geom_sf(data=counties_sf)+
+  geom_sf(data=accidents_sf)
+  
+```
+
+```{r}
+avalanches_co<-read_csv("blog/r/2023-03-03-Avalanches-revisited/CAIC_avalanches_1950-01-01_2023-03-05.csv")
+```
+
