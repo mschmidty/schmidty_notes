@@ -48,7 +48,7 @@ theme_update(
 ```
 
 ```{r}
-accidents<-read_xlsx("blog/r/2023-03-03-Avalanches-revisited/Accidents_2022_PUBLIC.xlsx")
+accidents<-read_xlsx("content/blog/r/2023-03-03-Avalanches-revisited/Accidents_2022_PUBLIC.xlsx")
 accidents
 ```
 
@@ -59,7 +59,7 @@ accidents|>
   summarize(total_deaths = sum(Killed))|>
   ungroup()|>
   ggplot(aes(AvyYear, total_deaths))+
-  geom_col(fill=primary_color)+
+  geom_col(fill=primary_color, width=0.5)+
   ylim(0, 45)+
   annotate(
     geom = "curve", x = 2016, y = 40, xend = 2020.75, yend = 37.75 , 
@@ -91,7 +91,7 @@ accidents|>
   ungroup()|>
   mutate(State=fct_reorder(State, total_killed))|>
   ggplot(aes(State, total_killed))+
-  geom_col(fill=primary_color)+
+  geom_col(fill=primary_color, width=0.5)+
   coord_flip()+
   ylim(0, 350)+
   geom_text(aes(label=total_killed), hjust=-0.4)+
