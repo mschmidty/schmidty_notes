@@ -28,7 +28,10 @@ library(urbnmapr)
 library(sf)
 library(elevatr)
 library(terra)
+library(conflicted)
 loadfonts(quiet=T)
+
+conflicts_prefer(dplyr::filter)
 
 color_theme <- "Renoir"
 color_theme_gradient <- "Greek"
