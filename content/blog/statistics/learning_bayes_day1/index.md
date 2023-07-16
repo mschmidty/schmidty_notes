@@ -2,7 +2,7 @@
 layout: post 
 title: 'Just Do Statistical Analysis!'
 author: 'Michael Schmidt'
-date: '2023-06-30'
+date: '2023-07-16'
 tags: ["Bayesian","R"]
 output:
   md_document:
@@ -116,12 +116,13 @@ train|>
 
 ``` r
 ## # A tibble: 4 × 5
-##   Survived Sex    avg_age_survived med_age_survived sd_age_survived
-##      <dbl> <chr>             <dbl>            <dbl>           <dbl>
-## 1        0 female             25.0             24.5            13.6
-## 2        1 female             28.8             28              14.2
-## 3        0 male               31.6             29              14.1
-## 4        1 male               27.3             28              16.5
+##   Survived Sex    avg_age_survived med_age_survived
+##      <dbl> <chr>             <dbl>            <dbl>
+## 1        0 female             25.0             24.5
+## 2        1 female             28.8             28  
+## 3        0 male               31.6             29  
+## 4        1 male               27.3             28  
+## # ℹ 1 more variable: sd_age_survived <dbl>
 ```
 
 This is a bit interesting, of the female passengers, you were more
@@ -172,12 +173,13 @@ train|>
 
 ``` r
 ## # A tibble: 4 × 5
-##   Survived Sex    avg_fare_survived med_fare_survived sd_fare_survived
-##      <dbl> <chr>              <dbl>             <dbl>            <dbl>
-## 1        0 female              23.0             15.2              24.8
-## 2        1 female              51.9             26                64.1
-## 3        0 male                22.0              9.42             32.4
-## 4        1 male                40.8             26.3              71.4
+##   Survived Sex    avg_fare_survived med_fare_survived
+##      <dbl> <chr>              <dbl>             <dbl>
+## 1        0 female              23.0             15.2 
+## 2        1 female              51.9             26   
+## 3        0 male                22.0              9.42
+## 4        1 male                40.8             26.3 
+## # ℹ 1 more variable: sd_fare_survived <dbl>
 ```
 
 ``` r
@@ -308,7 +310,8 @@ summary(logit_lm)
 ## Pclass      -1.2697410  0.1586252  -8.005 1.20e-15 ***
 ## Fare         0.0005373  0.0021821   0.246    0.805    
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  
+## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
@@ -364,7 +367,8 @@ summary(logit_lm_v2)
 ## Age         -0.036929   0.007628  -4.841 1.29e-06 ***
 ## Pclass      -1.288545   0.139259  -9.253  < 2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  
+## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
@@ -518,7 +522,7 @@ bayes_fit_v1 <- brm(as.factor(Survived) ~ Sex + Age + Pclass + Fare,
 ```
 
 ``` r
-## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\| Running MCMC with 10 sequential chains...
+## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\| Running MCMC with 10 sequential chains...
 ## 
 ## Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
 ## Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
@@ -544,8 +548,8 @@ summary(bayes_fit_v1)
 ##          total post-warmup draws = 10000
 ## 
 ## Population-Level Effects: 
-##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept     5.04      0.59     3.91     6.20 1.00     6109     6246
+##           Estimate Est.Error l-95% CI u-95% CI Rhat
+## Intercept     5.04      0.59     3.91     6.20 1.00
 ...Truncated Output...
 ```
 
@@ -646,18 +650,27 @@ mice(test, m=5, method="pmm", seed=500)
 ## Class: mids
 ## Number of multiple imputations:  5 
 ## Imputation methods:
-## PassengerId      Pclass        Name         Sex         Age       SibSp       Parch 
-##          ""          ""          ""          ""       "pmm"          ""          "" 
-##      Ticket        Fare       Cabin    Embarked 
-##          ""       "pmm"          ""          "" 
+## PassengerId      Pclass        Name         Sex 
+##          ""          ""          ""          "" 
+##         Age       SibSp       Parch      Ticket 
+##       "pmm"          ""          ""          "" 
+##        Fare       Cabin    Embarked 
+##       "pmm"          ""          "" 
 ## PredictorMatrix:
-##             PassengerId Pclass Name Sex Age SibSp Parch Ticket Fare Cabin Embarked
-## PassengerId           0      1    0   0   1     1     1      0    1     0        0
-## Pclass                1      0    0   0   1     1     1      0    1     0        0
-## Name                  1      1    0   0   1     1     1      0    1     0        0
-## Sex                   1      1    0   0   1     1     1      0    1     0        0
-## Age                   1      1    0   0   0     1     1      0    1     0        0
-## SibSp                 1      1    0   0   1     0     1      0    1     0        0
+##             PassengerId Pclass Name Sex Age SibSp Parch
+## PassengerId           0      1    0   0   1     1     1
+## Pclass                1      0    0   0   1     1     1
+## Name                  1      1    0   0   1     1     1
+## Sex                   1      1    0   0   1     1     1
+## Age                   1      1    0   0   0     1     1
+## SibSp                 1      1    0   0   1     0     1
+##             Ticket Fare Cabin Embarked
+## PassengerId      0    1     0        0
+## Pclass           0    1     0        0
+## Name             0    1     0        0
+## Sex              0    1     0        0
+## Age              0    1     0        0
+## SibSp            0    1     0        0
 ## Number of logged events:  5 
 ##   it im dep     meth      out
 ## 1  0  0     constant     Name
@@ -758,7 +771,7 @@ bayes_fit_v2 <- brm(as.factor(Survived) ~ Sex * as.factor(age_class) + Pclass + 
 ```
 
 ``` r
-## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\| Running MCMC with 10 sequential chains...
+## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/ Running MCMC with 10 sequential chains...
 ## 
 ## Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
 ## Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
@@ -784,8 +797,8 @@ bayes_fit_v2
 ##          total post-warmup draws = 10000
 ## 
 ## Population-Level Effects: 
-##                                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## Intercept                           4.17      0.45     3.30     5.08 1.00     8408
+##                                 Estimate Est.Error
+## Intercept                           4.17      0.45
 ...Truncated Output...
 ```
 
@@ -837,7 +850,7 @@ bayes_fit_v3 <- brm(as.factor(Survived) ~ Sex * as.factor(age_class) + as.factor
 ```
 
 ``` r
-## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\| Running MCMC with 5 sequential chains...
+## -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\| Running MCMC with 5 sequential chains...
 ## 
 ## Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
 ## Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
@@ -863,8 +876,8 @@ summary(bayes_fit_v3)
 ##          total post-warmup draws = 5000
 ## 
 ## Population-Level Effects: 
-##                                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## Intercept                           2.87      0.36     2.17     3.58 1.00     4152
+##                                 Estimate Est.Error
+## Intercept                           2.87      0.36
 ...Truncated Output...
 ```
 

@@ -48,7 +48,7 @@ theme_update(
 ```
 
 ```{r}
-accidents<-read_xlsx("blog/r/2023-03-03-Avalanches-revisited/Accidents_2022_PUBLIC.xlsx")
+accidents<-read_xlsx("content/blog/r/2023-03-03-Avalanches-revisited/Accidents_2022_PUBLIC.xlsx")
 accidents
 ```
 
@@ -192,6 +192,7 @@ as(elev_us, "SpatRaster")
 plot(elev_us)
 
 accidents_sf|>
+  st_transform(crs(as(elev_us, "SpatRaster")))
   bind_rows(terra::extract(as(elev_us, "SpatRaster"),accidents_sf))|>
   View()
 
