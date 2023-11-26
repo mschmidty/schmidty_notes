@@ -2,7 +2,7 @@
 layout: post 
 title: 'Just Do Statistical Analysis!'
 author: 'Michael Schmidt'
-date: '2023-07-16'
+date: 2023-07-16
 tags: ["Bayesian","R"]
 output:
   md_document:
