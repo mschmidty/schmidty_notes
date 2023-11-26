@@ -195,6 +195,7 @@ as(elev_us, "SpatRaster")
 plot(elev_us)
 
 accidents_sf|>
+  st_transform(crs(as(elev_us, "SpatRaster")))
   bind_rows(terra::extract(as(elev_us, "SpatRaster"),accidents_sf))|>
   View()
 
