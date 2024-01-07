@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Fira+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Merriweather:wght@300;400;500;700&display=swap');
 
+@import url("https://use.typekit.net/boq2fnl.css");
 
-$body-text: "Merriweather", Georgia, Serif;
+$body-text: "calluna", Georgia, Serif;
 $header-text: "Fira Sans", Sans-Serif;
 $deco-text: "Fira Code", monospace;
 $code-text: "Fira Code", monospace;
-$body-text-italic: "Merriweather Italic";
+$body-text-italic: "calluna";
 
 body{
   font-family: $body-text;
@@ -39,7 +40,7 @@ h3 {
 
 p{
   font-family: $body-text;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   line-height: 1.8;
   font-weight: 400;
   margin-bottom: 1.2rem;
