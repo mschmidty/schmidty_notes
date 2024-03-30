@@ -43,7 +43,7 @@ installed:
 Python 3.12.1
 ```
 
-I have python 3.12.1 installed, the latest verions as of the writing of
+I have python 3.12.1 installed, the latest versions as of the writing of
 this post. Then you can create a `venv` from whatever directory you wish
 (cd there first) and initialize it.
 
@@ -53,7 +53,7 @@ source rgee_env/bin/activate
 ```
 
 You should have `(rgee_env)` in your terminal prompt if the environment
-was successfully created. Now we need to install the dependancies
+was successfully created. Now we need to install the dependencies
 earthengine-api and Numpy. From the terminal again (not the R terminal):
 
 ``` bash
@@ -81,7 +81,7 @@ library(terra)
 From here I am not going to evaluate any of these blocks because you
 cannot `ee_Initialize()` or get images that are stored together.
 
-Here we initialize my google cload account and then make sure my
+Here we initialize my google cloud account and then make sure my
 credentials are good.
 
 ``` r
@@ -91,7 +91,7 @@ ee_check_credentials()
 
 ## Check Earth Engine and Python packages
 
-Then we check that earth engine python packages are installed.
+Then we check that Earth Engine python packages are installed.
 
 ``` r
 ee_check()
@@ -101,7 +101,7 @@ ee_check_packages()
 
 ## Make a Map
 
-Next we tell google earth engine what collection we would like to use,
+Next we tell Google Earth Engine what collection we would like to use,
 set a geometry and projection. The geometry and projection are more so
 that I can download this image.
 
