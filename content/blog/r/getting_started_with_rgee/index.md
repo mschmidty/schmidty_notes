@@ -1,0 +1,134 @@
+---
+layout: post
+title: Getting Started With RGEE
+date: 2024-01-15T00:00:00.000Z
+tags:
+  - Google Earth Engine
+format:
+  commonmark:
+    variant: +yaml_metadata_block
+    df-print: tibble
+execute:
+  echo: true
+  message: false
+  warning: false
+  class-output: r
+---
+
+
+I need to get some data hosted through [Google Earth
+Engine](https://earthengine.google.com/). I’ve played around with the
+javacript and python libraries, but at heart I’m an R developer and
+would prefer to use earth engine in R if I can.
+
+This post is going to assume you have some python experience and can set
+up a python virtual environment of some sort. This is also done on a
+MacOS in zsh. Getting a python environment setup is a little different
+on Windows.
+
+**Note:** I use VScode and call R using Radian a python package. Because
+of this my default python environment was the environment that radian is
+in. I basically could not change that environment no matter what I
+tried. I would also note that it seems like many folks have trouble
+setting their environment within reticulate.
+
+## Setup a python environment and install rgee
+
+To get rgee working we need to get a python environment set up. To start
+from the terminal in bash or zsh (not an R terminal) make sure python is
+installed:
+
+``` bash
+❯ python --version
+Python 3.12.1
+```
+
+I have python 3.12.1 installed, the latest verions as of the writing of
+this post. Then you can create a `venv` from whatever directory you wish
+(cd there first) and initialize it.
+
+``` bash
+python -m venv rgee_env
+source rgee_env/bin/activate
+```
+
+You should have `(rgee_env)` in your terminal prompt if the environment
+was successfully created. Now we need to install the dependancies
+earthengine-api and Numpy. From the terminal again (not the R terminal):
+
+``` bash
+pip install earthengine-api
+pip install numpy
+```
+
+You should have all the correct python libraries to run `rgee` from R.
+
+## Setup Google Earth Engine Project
+
+Create or use and existing account at the [Google Earth
+Engine](https://earthengine.google.com/) website and create a project.
+Make note of the project ID.
+
+``` r
+library(rgee)
+library(reticulate)
+library(tidyverse)
+library(terra)
+```
+
+## Login to Earth Engine
+
+From here I am not going to evaluate any of these blocks because you
+cannot `ee_Initialize()` or get images that are stored together.
+
+Here we initialize my google cload account and then make sure my
+credentials are good.
+
+``` r
+ee_Initialize(user = 'mschmidty@gmail.com', drive = TRUE)
+ee_check_credentials()
+```
+
+## Check Earth Engine and Python packages
+
+Then we check that earth engine python packages are installed.
+
+``` r
+ee_check()
+ee_check_python_packages()
+ee_check_packages()
+```
+
+## Make a Map
+
+Next we tell google earth engine what collection we would like to use,
+set a geometry and projection. The geometry and projection are more so
+that I can download this image.
+
+``` r
+srtm <- ee$Image("USGS/SRTMGL1_003")
+geometry <- ee$Geometry$Rectangle(
+  coords = c(-108.274715, 37.076888, -107.213842, 37.965651),
+  proj = "EPSG:4326",
+  geodesic = FALSE
+)
+```
+
+## Download the image as a `{terra}` SpatRast
+
+This step downloads the above specified image to a folder on google
+drive. `ee_monitoring(task=as_rast)` tells us the status of the download
+while the next step `rast_col_rd<-columbine_rd|>ee_utils_future_value()`
+adds the image to memory. The easiest way to use the image from here is
+to save the raster to memory and then call it from there.
+
+``` r
+columbine_rd <- ee_as_rast(
+  image = srtm,
+  via = "drive",
+  region = geometry,
+  lazy = TRUE
+)
+ee_monitoring(task=as_rast)
+rast_col_rd<-columbine_rd|>ee_utils_future_value()
+```
