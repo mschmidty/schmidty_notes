@@ -8,6 +8,6 @@ I have been less enthusiastic about predicting if the Dolores will have a raftab
 
 ![An image of a plot with predictions for the 2024 rafting season. The plot has some higher predictions lately and in January but is mostly predicting zero days.](./prediction_2024.jpg)
 
-If you want to read about how I made this model I wrote about [building the model last year](blog/r/2023-01-03-dolores_river_flow_predict). I also have all the model scripts, including this year, plus a github action that ran the model a couple of times a week last year [on github](https://github.com/mschmidty/dolores_flow_predict). 
+If you want to read about how I made this model I wrote about [building the model last year](blog/r/2023-01-03-dolores_river_flow_predict). I also have all the model scripts, including this year, plus a GitHub action that ran the model a couple of times a week last year [on github](https://github.com/mschmidty/dolores_flow_predict). 
 
 Moving forward I'd like to continue my ["Just Do Statistics"](blog/statistics/learning_bayes_day1) theme and try to build a model using a Bayesian approach so that I can predict the outcomes probabilistically.  Not sure if I'll have time.  Maybe next year. 

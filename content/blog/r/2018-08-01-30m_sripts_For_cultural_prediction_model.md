@@ -2,7 +2,7 @@
 layout: post
 title:  "Cultural Model R Scripts"
 date: 2018-08-01
-tags: [ predictive models, randomForest]
+tags: [ Remote Sensing, Modelling ,randomForest]
 ---
 
 The following are scripts that I used to make a cultural prediction model.  It uses topographic, hydrologic and biological GIS information to predict areas where arc sites likely occur on the landscape.
