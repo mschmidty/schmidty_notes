@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Why blogging?"
-date: 2024-04-07
+date: 2024-04-12
 tags: [ "History" ]
 ---
 
