@@ -24,6 +24,26 @@
   }
   img{
     width: 100%;
+    max-width: 1400px;
+    display: block;
+    margin: 1.5rem auto 0 1.5rem auto;
+  }
+  img + em {
+    margin-top: 0; 
+    font-style: italic;
+    padding-bottom: 1.2rem;
+    color: $dark-grey;
+    max-width: 1400px;
+    display: block;
+    margin: 0 auto;
+  }
+  p:has(img):has(em) img {
+    margin-bottom: 0;
+  }
+  p:has(img) {
+    display: block;
+    width: 100%;
+    max-width: 1400px;
   }
   img.small-image{
     max-width: 200px;
