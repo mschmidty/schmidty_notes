@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Chrinicle I" 
+title: "Chronicle I" 
 date: 2024-04-14 
 tags: "Chronicle"
 ---
