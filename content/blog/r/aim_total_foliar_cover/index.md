@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '30 Day Map Challenge (Lines): AIM Total Foliar Cover'
+title: '30 Day Map Challenge (Points): AIM Total Foliar Cover'
 date: 2024-11-26T00:00:00.000Z
 tags:
   - AIM
@@ -22,7 +22,7 @@ I’ve been a bit busy, so I’m just getting to my first map challenge of
 the month lines. For it, I’m using my favorite dataset, the Bureau of
 Land Management’s, Assessment, Inventory, and Monitoring dataset. Here
 is total foliar cover for every point completed in the Western Lower 48
-states. You can find the dataset
+states. You can find the data set
 [here](https://gbp-blm-egis.hub.arcgis.com/pages/aim).
 
 ``` r
