@@ -17,7 +17,7 @@ My daughter is quickly becoming a small human and is slowly becoming more intera
 
 ## Work
 
-Last year, work was aweful. I started a new job and that job was pretty terrible. I'm in a much better place with work now and am looking forward to this year. I don't think I am going to stay at my current joby long, but knowing that is good.
+Last year, work was aweful. I started a new job and that job was pretty terrible. I'm in a much better place with work now and am looking forward to this year. I don't think I am going to stay at my current job long, but knowing that is good.
 
 One of the things that helped me get to a better place with work was a detail with a Planning Service Group. It was the first job I've had where I worked as a programmer daily. I loved it. And I think that moving forward I am going to try and move into a programming role somewhere.
 
@@ -35,15 +35,45 @@ Two things were really important to my success with the team. One was that I use
 
 ### Neovim
 
-This year I also made the change from VS Code to Neovim and I think it was a large part of why I was successful at the MPSG. I'm a very distractable person. Neovim helps me stay in the editor and not moving from the mouse to the keys often helps me stay focused and on task. Neovim can also be a distraction so I had to be careful not to get to into my config file which I was mostly successful at. But there are so many nice customizations, from how you move from file to file to how you add Zotero citations to a references.bib file in quarto and markdown.
+This year I also made the change from VS Code to Neovim and I think it was a large part of why I was successful at the MPSG. I'm a very distractable person. Neovim helps me stay in the editor and not moving from the mouse to the keys often helps me stay focused and on task. Neovim can also be a distraction so I had to be careful not to get to into my config file which I was mostly successful at. But there are so many nice customizations, from how you move from file to file, to how you add Zotero citations to a references.bib file in quarto and markdown.
 
-I've also become pretty obsessed with my terminal. I just started using Ghostty after using Wezterm for a while. I don't think it is good to change tools that often but I'm passionate about my tools so I'm not too upset that I've changed a few times.
+I've also become pretty obsessed with my terminal. I just started using Ghostty after using Wezterm for a while. I don't think it is good to change tools that often but I'm passionate about my tools so I'm not too upset that I've changed a few times lately. I was using VS code and warp terminal for a long time.
+
+I think this year it would be good to familiarize myself with tmux although I'm always a bit reticent to use a tool that I can't use at both work and home.
 
 ## Life
 
-### Less Alcohol, but still some
+### Less Alcohol, but still some, and more sleep
+
+One of the biggest changes that I made at the end of 2024 is to stop drinking alcohol every day. I don't think I've ever had a problem with alcohol, but I definitely have gotten into the habit of drinking a beer or glass of wine every night and it just seemed pointless. It adds zero value to my life when I drink like that. Am I going to quit drinking all together, no. Some of my favorite times are grabbing a drink with friends at a bar or over dinner and having a great conversation. Or going for a long bike ride and then having a beer.
+
+The end of drinking every night was spurred by the fact that 2023 was a rough year for sleeping for me and I found that if I stopped drinking it helped me sleep better.
 
 ### More Excersize
+
+I exercised a lot in 2024 and I loved every minute of it. One of the hardest parts about moving to Durango and Building a house is that we are temporarily in a tiny house with a toddler and two 100 pound dogs. So getting out and exercising is a must for me.
+
+Last year here is my exercise breakdown:
+
+**Run**
+
+- Time: 52h 48m
+- Distance: 309.4 miles
+- Elevation Gain: 26,993 ft
+- Number of Activities: 58
+
+**Ride**
+
+- Time: 157h 53m
+- Distance: 1,367.3 mi
+- Elevation Gain: 199,909 ft
+- Number of Activities: 73
+
+I also logged 2 Rock Climbs, but I usually don't log those.
+
+That is a lot of exercise. I'd like to see if I can exceed that number this year. The goal is total time really: So, we are shooting for more than 210 hours of exercise. That seems like a lot but it just isn't. I remember when I used to ride up to 30 hours a week when I was in college.
+
+I think the goal is I really want to try and get really fit again, maybe do some bike races or running races in 2025. I'm not unfit but it's felt grate to start to get more fit this year and I'd like to keep that trend going.
 
 ## Looking Back at what I wanted from 2024
 
